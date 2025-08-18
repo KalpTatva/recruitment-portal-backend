@@ -1,5 +1,7 @@
+using Microsoft.EntityFrameworkCore;
 using RecruitmentPortal.Repository.Implementation;
 using RecruitmentPortal.Repository.Interfaces;
+using RecruitmentPortal.Repository.Models;
 using RecruitmentPortal.Service.Implementation;
 using RecruitmentPortal.Service.Interfaces;
 
@@ -9,6 +11,9 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext<RecruitmentPortalContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Configure CORS policy to allow requests from the client application
 builder.Services.AddCors(options =>
@@ -30,6 +35,8 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 // generic repository
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
 
 var app = builder.Build();
 
