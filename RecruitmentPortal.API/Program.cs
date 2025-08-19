@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using RecruitmentPortal.Repository.Implementation;
 using RecruitmentPortal.Repository.Interfaces;
 using RecruitmentPortal.Repository.Models;
+using RecruitmentPortal.Service.Helpers;
 using RecruitmentPortal.Service.Implementation;
 using RecruitmentPortal.Service.Interfaces;
 
@@ -31,6 +32,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<JwtTokenHelper>();
 
 // generic repository
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));

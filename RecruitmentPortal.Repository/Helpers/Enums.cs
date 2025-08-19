@@ -6,4 +6,10 @@ public class Enums
     {
         Admin = 1, Interviewer = 2, Candidate = 3
     }
+
+    public enum ThemeEnum
+    {
+        Dark = 1,
+        Light = 2
+    }
 }

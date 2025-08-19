@@ -15,6 +15,49 @@ public class AuthController : ControllerBase
         _authService = authService;
     }
 
+    [Route("login")]
+    [HttpPost]
+    public async Task<IActionResult> Login([FromBody] LoginViewModel login)
+    {
+        try
+        {
+            if (ModelState.IsValid)
+            {
+                ResponseViewModel<TokensViewModel> response = await _authService.LoginUser(login);
+                if (response.Success)
+                {
+                    return Ok(new ApiResponse<TokensViewModel> { Success = true, Message = response.Message ?? "", Data = response.data, Errors = null });
+                }
+                return BadRequest(new ApiResponse<string> { Success = false, Message = response?.Message ?? "", Data = null, Errors = null });
+
+            }
+            else
+            {
+                List<string> errorsList = ModelState.Values
+                            .SelectMany(v => v.Errors)
+                            .Select(e => e.ErrorMessage)
+                            .ToList();
+
+                return BadRequest(new ApiResponse<string>
+                {
+                    Success = false,
+                    Message = "Invalid Login credentials.",
+                    Data = null,
+                    Errors = errorsList
+                });
+            }
+
+        }
+        catch(Exception e)
+        {
+            return BadRequest(new ApiResponse<string>
+            {
+                Success = false,
+                Message = $"{e.Message}",
+                Data = null
+            });
+        }
+    }
 
     [Route("register")]
     [HttpPost]
@@ -51,7 +94,7 @@ public class AuthController : ControllerBase
             return BadRequest(new ApiResponse<string>
             {
                 Success = false,
-                Message = $"Error occured while Registering new user. {e.Message}",
+                Message = $"{e.Message}",
                 Data = null
             });
         }
