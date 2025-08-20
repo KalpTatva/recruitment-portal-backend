@@ -6,4 +6,6 @@ public interface IAuthService
 {
     Task<ResponseViewModel<TokensViewModel>> LoginUser(LoginViewModel login);
     Task<ResponseViewModel<string>> RegisterNewUser(RegisterUserViewModel register);
+
+    Task<ResponseViewModel<string>> RegisterNewCompany(RegisterCompanyViewModel company);
 }

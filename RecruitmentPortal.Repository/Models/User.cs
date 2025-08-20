@@ -27,6 +27,10 @@ public partial class User
 
     public int? DeletedById { get; set; }
 
+    public bool? IsDeleted { get; set; }
+
+    public virtual ICollection<Company> Companies { get; set; } = new List<Company>();
+
     public virtual ICollection<EducationUserMapping> EducationUserMappings { get; set; } = new List<EducationUserMapping>();
 
     public virtual ICollection<ExperienceUserMapping> ExperienceUserMappings { get; set; } = new List<ExperienceUserMapping>();

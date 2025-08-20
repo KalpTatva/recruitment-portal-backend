@@ -99,4 +99,46 @@ public class AuthController : ControllerBase
             });
         }
     }
+
+
+    [Route("register-company")]
+    [HttpPost] 
+    public async Task<IActionResult> RegisterCompany([FromBody] RegisterCompanyViewModel register)
+    {
+        try
+        {
+            if (ModelState.IsValid)
+            {
+                ResponseViewModel<string> response = await _authService.RegisterNewCompany(register);
+                if (response.Success)
+                {
+                    return Ok(new ApiResponse<string> { Success = true, Message = response?.Message ?? "", Data = null, Errors = null });
+                }
+                return BadRequest(new ApiResponse<string> { Success = false, Message = response?.Message ?? "", Data = null, Errors = null });
+            }
+            else
+            {
+                List<string> errorsList = ModelState.Values
+                            .SelectMany(v => v.Errors)
+                            .Select(e => e.ErrorMessage)
+                            .ToList();
+                return BadRequest(new ApiResponse<string>
+                {
+                    Success = false,
+                    Message = "Invalid Registeration data.",
+                    Data = null,
+                    Errors = errorsList
+                });
+            }
+        }
+        catch (Exception e)
+        {
+            return BadRequest(new ApiResponse<string>
+            {
+                Success = false,
+                Message = $"{e.Message}",
+                Data = null
+            });
+        }
+    }
 }

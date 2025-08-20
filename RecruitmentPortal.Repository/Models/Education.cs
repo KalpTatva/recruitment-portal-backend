@@ -33,5 +33,7 @@ public partial class Education
 
     public int? CreatedById { get; set; }
 
+    public bool? IsDeleted { get; set; }
+
     public virtual ICollection<EducationUserMapping> EducationUserMappings { get; set; } = new List<EducationUserMapping>();
 }

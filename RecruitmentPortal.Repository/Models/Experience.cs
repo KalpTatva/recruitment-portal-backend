@@ -23,6 +23,20 @@ public partial class Experience
 
     public string? Description { get; set; }
 
+    public DateTime? CreatedAt { get; set; }
+
+    public DateTime? ModifiedAt { get; set; }
+
+    public DateTime? DeletedAt { get; set; }
+
+    public int? ModifiedById { get; set; }
+
+    public int? DeletedById { get; set; }
+
+    public int? CreatedById { get; set; }
+
+    public bool? IsDeleted { get; set; }
+
     public virtual ICollection<ExperienceUserMapping> ExperienceUserMappings { get; set; } = new List<ExperienceUserMapping>();
 
     public virtual ICollection<SkillsExperienceMapping> SkillsExperienceMappings { get; set; } = new List<SkillsExperienceMapping>();

@@ -23,6 +23,8 @@ public partial class ExperienceUserMapping
 
     public int? CreatedById { get; set; }
 
+    public bool? IsDeleted { get; set; }
+
     public virtual Experience? Experience { get; set; }
 
     public virtual User? User { get; set; }

@@ -17,6 +17,8 @@ public partial class RecruitmentPortalContext : DbContext
 
     public virtual DbSet<City> Cities { get; set; }
 
+    public virtual DbSet<Company> Companies { get; set; }
+
     public virtual DbSet<Country> Countries { get; set; }
 
     public virtual DbSet<Education> Educations { get; set; }
@@ -58,6 +60,37 @@ public partial class RecruitmentPortalContext : DbContext
                 .HasConstraintName("FK__City__StateId__5070F446");
         });
 
+        modelBuilder.Entity<Company>(entity =>
+        {
+            entity.HasKey(e => e.CompanyId).HasName("PK__company__2D971CACA6D2D6EC");
+
+            entity.ToTable("company");
+
+            entity.Property(e => e.CompanyName)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.CompanyType)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.CompanyWebsite)
+                .HasMaxLength(500)
+                .IsUnicode(false);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.CreatedById).HasDefaultValue(0);
+            entity.Property(e => e.DeletedById).HasDefaultValue(0);
+            entity.Property(e => e.Description).IsUnicode(false);
+            entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+            entity.Property(e => e.Location)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.ModifiedById).HasDefaultValue(0);
+
+            entity.HasOne(d => d.User).WithMany(p => p.Companies)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__company__UserId__5CD6CB2B");
+        });
+
         modelBuilder.Entity<Country>(entity =>
         {
             entity.HasKey(e => e.CountryId).HasName("PK__Country__10D1609FDC06E984");
@@ -88,6 +121,7 @@ public partial class RecruitmentPortalContext : DbContext
                 .HasMaxLength(255)
                 .IsUnicode(false);
             entity.Property(e => e.Grade).HasColumnType("numeric(18, 0)");
+            entity.Property(e => e.IsDeleted).HasDefaultValue(false);
             entity.Property(e => e.ModifiedById).HasDefaultValue(0);
             entity.Property(e => e.School)
                 .HasMaxLength(255)
@@ -123,13 +157,18 @@ public partial class RecruitmentPortalContext : DbContext
             entity.Property(e => e.CompanyName)
                 .HasMaxLength(255)
                 .IsUnicode(false);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.CreatedById).HasDefaultValue(0);
+            entity.Property(e => e.DeletedById).HasDefaultValue(0);
             entity.Property(e => e.Description)
                 .HasMaxLength(500)
                 .IsUnicode(false)
                 .HasColumnName("description");
+            entity.Property(e => e.IsDeleted).HasDefaultValue(false);
             entity.Property(e => e.LocationAddress)
                 .HasMaxLength(500)
                 .IsUnicode(false);
+            entity.Property(e => e.ModifiedById).HasDefaultValue(0);
             entity.Property(e => e.Title)
                 .HasMaxLength(255)
                 .IsUnicode(false);
@@ -144,6 +183,7 @@ public partial class RecruitmentPortalContext : DbContext
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.CreatedById).HasDefaultValue(0);
             entity.Property(e => e.DeletedById).HasDefaultValue(0);
+            entity.Property(e => e.IsDeleted).HasDefaultValue(false);
             entity.Property(e => e.ModifiedById).HasDefaultValue(0);
 
             entity.HasOne(d => d.Experience).WithMany(p => p.ExperienceUserMappings)
@@ -197,6 +237,11 @@ public partial class RecruitmentPortalContext : DbContext
         {
             entity.HasKey(e => e.SkillId).HasName("PK__Skills__DFA0918799D3EBA4");
 
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.CreatedById).HasDefaultValue(0);
+            entity.Property(e => e.DeletedById).HasDefaultValue(0);
+            entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+            entity.Property(e => e.ModifiedById).HasDefaultValue(0);
             entity.Property(e => e.SkillName)
                 .HasMaxLength(255)
                 .IsUnicode(false);
@@ -247,6 +292,7 @@ public partial class RecruitmentPortalContext : DbContext
             entity.Property(e => e.Email)
                 .HasMaxLength(255)
                 .IsUnicode(false);
+            entity.Property(e => e.IsDeleted).HasDefaultValue(false);
             entity.Property(e => e.ModifiedById).HasDefaultValue(0);
             entity.Property(e => e.Password)
                 .HasMaxLength(500)
