@@ -13,6 +13,8 @@ public partial class State
 
     public virtual ICollection<City> Cities { get; set; } = new List<City>();
 
+    public virtual ICollection<CompanyLocation> CompanyLocations { get; set; } = new List<CompanyLocation>();
+
     public virtual Country? Country { get; set; }
 
     public virtual ICollection<Profile> Profiles { get; set; } = new List<Profile>();

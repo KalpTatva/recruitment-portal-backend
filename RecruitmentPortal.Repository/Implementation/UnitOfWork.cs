@@ -10,13 +10,16 @@ public class UnitOfWork : IUnitOfWork
     public IUserRepository userRepository { get; set; }
     public IProfileRepository profileRepository { get; set; }
     public ICompanyRepository companyRepository { get; set; }
-
+    public ICountryRepository countryRepository { get; set; }
+    public IStateRepository stateRepository { get; set; }
     public UnitOfWork(RecruitmentPortalContext context)
     {
         _context = context;
         userRepository = new UserRepository(_context);
         profileRepository = new ProfileRepository(_context);
         companyRepository = new CompanyRepository(_context);
+        countryRepository = new CountryRepository(_context);
+        stateRepository = new StateRepository(_context);
     }
 
     public async Task<int> SaveChanges()

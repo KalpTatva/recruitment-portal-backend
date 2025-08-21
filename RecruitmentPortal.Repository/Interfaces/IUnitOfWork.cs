@@ -7,6 +7,8 @@ public interface IUnitOfWork : IDisposable
     IUserRepository userRepository { get; set; }
     ICompanyRepository companyRepository { get; set; }
     IProfileRepository profileRepository { get; set; }
+    ICountryRepository countryRepository { get; set; }
+    IStateRepository stateRepository { get; set; }
     Task<int> SaveChanges();
     Task<IDbContextTransaction> BeginTransactionAsync();
     Task CommitAsync();

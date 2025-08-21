@@ -95,7 +95,8 @@ public class AuthService : IAuthService
             // add phone into profile
             Profile profile = new Profile
             {
-                Phone = register.phone
+                Phone = register.phone,
+                CountryCode = register.countryCode
             };
 
             await _unitOfWork.profileRepository.AddAsync(profile);
@@ -154,7 +155,8 @@ public class AuthService : IAuthService
             // add phone into profile
             Profile profile = new Profile
             {
-                Phone = company.phone
+                Phone = company.phone,
+                CountryCode = company.countryCode
             };
 
             await _unitOfWork.profileRepository.AddAsync(profile);

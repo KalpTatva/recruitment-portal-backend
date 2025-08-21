@@ -24,4 +24,7 @@ public class RegisterUserViewModel
     [Required(ErrorMessage = "phone number is required")]
     [RegularExpression(@"^[0-9]{10}$", ErrorMessage = "Invalid phone number, should be exactly 10 digits.")]
     public long phone { get; set; }
+
+    [Required(ErrorMessage = "country code is required")]
+    public string countryCode { get; set; } = string.Empty;
 }

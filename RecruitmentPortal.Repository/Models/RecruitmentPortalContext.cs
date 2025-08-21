@@ -19,6 +19,12 @@ public partial class RecruitmentPortalContext : DbContext
 
     public virtual DbSet<Company> Companies { get; set; }
 
+    public virtual DbSet<CompanyLocation> CompanyLocations { get; set; }
+
+    public virtual DbSet<CompanySocialMedium> CompanySocialMedia { get; set; }
+
+    public virtual DbSet<CompanyStatus> CompanyStatuses { get; set; }
+
     public virtual DbSet<Country> Countries { get; set; }
 
     public virtual DbSet<Education> Educations { get; set; }
@@ -89,6 +95,85 @@ public partial class RecruitmentPortalContext : DbContext
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__company__UserId__5CD6CB2B");
+        });
+
+        modelBuilder.Entity<CompanyLocation>(entity =>
+        {
+            entity.HasKey(e => e.CompanyLocationId).HasName("PK__CompanyL__7496FF4DA24A63ED");
+
+            entity.Property(e => e.Address)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.CreatedById).HasDefaultValue(0);
+            entity.Property(e => e.DeletedById).HasDefaultValue(0);
+            entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+            entity.Property(e => e.ModifiedById).HasDefaultValue(0);
+
+            entity.HasOne(d => d.Company).WithMany(p => p.CompanyLocations)
+                .HasForeignKey(d => d.CompanyId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__CompanyLo__Compa__76969D2E");
+
+            entity.HasOne(d => d.Country).WithMany(p => p.CompanyLocations)
+                .HasForeignKey(d => d.CountryId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__CompanyLo__Count__778AC167");
+
+            entity.HasOne(d => d.State).WithMany(p => p.CompanyLocations)
+                .HasForeignKey(d => d.StateId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__CompanyLo__State__787EE5A0");
+        });
+
+        modelBuilder.Entity<CompanySocialMedium>(entity =>
+        {
+            entity.HasKey(e => e.CompanySocialMedia).HasName("PK__CompanyS__A3F33ABE3546CC5A");
+
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.CreatedById).HasDefaultValue(0);
+            entity.Property(e => e.DeletedById).HasDefaultValue(0);
+            entity.Property(e => e.FaceBook)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+            entity.Property(e => e.LinkedIn)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.Medium)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.ModifiedById).HasDefaultValue(0);
+            entity.Property(e => e.Twitter)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.Company).WithMany(p => p.CompanySocialMedia)
+                .HasForeignKey(d => d.CompanyId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__CompanySo__Compa__00200768");
+        });
+
+        modelBuilder.Entity<CompanyStatus>(entity =>
+        {
+            entity.HasKey(e => e.CompanyStatusId).HasName("PK__CompanyS__2104C34EE4076872");
+
+            entity.ToTable("CompanyStatus");
+
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.CreatedById).HasDefaultValue(0);
+            entity.Property(e => e.DeletedById).HasDefaultValue(0);
+            entity.Property(e => e.IndustryType)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+            entity.Property(e => e.ModifiedById).HasDefaultValue(0);
+            entity.Property(e => e.TotalRevenue).HasColumnType("numeric(18, 0)");
+
+            entity.HasOne(d => d.Company).WithMany(p => p.CompanyStatuses)
+                .HasForeignKey(d => d.CompanyId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__CompanySt__Compa__07C12930");
         });
 
         modelBuilder.Entity<Country>(entity =>
@@ -204,7 +289,14 @@ public partial class RecruitmentPortalContext : DbContext
             entity.Property(e => e.Address)
                 .HasMaxLength(500)
                 .IsUnicode(false);
+            entity.Property(e => e.CountryCode)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .HasDefaultValue("00");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.CreatedById).HasDefaultValue(0);
             entity.Property(e => e.DateOfBirth).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.DeletedById).HasDefaultValue(0);
             entity.Property(e => e.FirstName)
                 .HasMaxLength(255)
                 .IsUnicode(false);
@@ -212,12 +304,14 @@ public partial class RecruitmentPortalContext : DbContext
                 .HasMaxLength(500)
                 .IsUnicode(false)
                 .HasColumnName("ImageURl");
+            entity.Property(e => e.IsDeleted).HasDefaultValue(false);
             entity.Property(e => e.LastName)
                 .HasMaxLength(255)
                 .IsUnicode(false);
             entity.Property(e => e.MiddleName)
                 .HasMaxLength(255)
                 .IsUnicode(false);
+            entity.Property(e => e.ModifiedById).HasDefaultValue(0);
             entity.Property(e => e.Pincode).HasColumnName("pincode");
 
             entity.HasOne(d => d.City).WithMany(p => p.Profiles)

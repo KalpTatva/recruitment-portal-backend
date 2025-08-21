@@ -31,6 +31,22 @@ public partial class Profile
 
     public int? CityId { get; set; }
 
+    public string CountryCode { get; set; } = null!;
+
+    public DateTime? CreatedAt { get; set; }
+
+    public DateTime? ModifiedAt { get; set; }
+
+    public DateTime? DeletedAt { get; set; }
+
+    public int? ModifiedById { get; set; }
+
+    public int? DeletedById { get; set; }
+
+    public int? CreatedById { get; set; }
+
+    public bool? IsDeleted { get; set; }
+
     public virtual City? City { get; set; }
 
     public virtual Country? Country { get; set; }

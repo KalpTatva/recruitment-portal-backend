@@ -33,5 +33,11 @@ public partial class Company
 
     public int? CreatedById { get; set; }
 
+    public virtual ICollection<CompanyLocation> CompanyLocations { get; set; } = new List<CompanyLocation>();
+
+    public virtual ICollection<CompanySocialMedium> CompanySocialMedia { get; set; } = new List<CompanySocialMedium>();
+
+    public virtual ICollection<CompanyStatus> CompanyStatuses { get; set; } = new List<CompanyStatus>();
+
     public virtual User User { get; set; } = null!;
 }

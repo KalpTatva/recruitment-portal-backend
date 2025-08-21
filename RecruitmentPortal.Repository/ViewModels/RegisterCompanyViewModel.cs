@@ -13,7 +13,11 @@ public class RegisterCompanyViewModel
     public string userName { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Phone number is required.")]
+    [RegularExpression(@"^[0-9]{10}$", ErrorMessage = "Invalid phone number, should be exactly 10 digits.")]
     public long phone { get; set; }
+
+    [Required(ErrorMessage = "Country code is required.")]
+    public string countryCode { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Company name is required.")]
     public string companyName { get; set; } = string.Empty;

@@ -9,6 +9,8 @@ public partial class Country
 
     public string CountryName { get; set; } = null!;
 
+    public virtual ICollection<CompanyLocation> CompanyLocations { get; set; } = new List<CompanyLocation>();
+
     public virtual ICollection<Profile> Profiles { get; set; } = new List<Profile>();
 
     public virtual ICollection<State> States { get; set; } = new List<State>();
