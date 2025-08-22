@@ -147,19 +147,12 @@ public class AuthService : IAuthService
                 throw new Exception("Username already exists! please try another one!");
             }
             // need to check if phone already exists or not 
-            Profile? profileByPhone = await _unitOfWork.profileRepository.FindAsync(x => x.Phone == company.phone);
-            if (profileByPhone != null)
+            Company? companyByPhone = await _unitOfWork.companyRepository.FindAsync(x => x.Phone == company.phone);
+            if (companyByPhone != null)
             {
                 throw new Exception("Phone already exists! please try another one!");
             }
-            // add phone into profile
-            Profile profile = new Profile
-            {
-                Phone = company.phone,
-                CountryCode = company.countryCode
-            };
 
-            await _unitOfWork.profileRepository.AddAsync(profile);
 
             // add other values in users
             User user = new User
@@ -168,19 +161,20 @@ public class AuthService : IAuthService
                 Password = BCrypt.Net.BCrypt.EnhancedHashPassword(company.password),
                 UserName = company.userName,
                 Role = (int)RoleEnum.Admin,
-                ProfileId = profile.ProfileId,
             };
             await _unitOfWork.userRepository.AddAsync(user);
-
+        
             // add other values in companies
             Company newCompany = new Company
             {
+                Phone = company.phone,
+                CountryCode = company.countryCode,
+                UserId = user.UserId,
                 CompanyName = company.companyName,
                 CompanyType = company.CompanyType,
                 Description = company.companyDescription,
                 CompanyWebsite = company.companyWebsite,
                 Location = company.companyLocation,
-                UserId = user.UserId,
                 CreatedById = user.UserId
             };
             await _unitOfWork.companyRepository.AddAsync(newCompany);

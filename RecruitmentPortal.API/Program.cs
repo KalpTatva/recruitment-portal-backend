@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using RecruitmentPortal.API.Middlewares;
 using RecruitmentPortal.Repository.Implementation;
 using RecruitmentPortal.Repository.Interfaces;
 using RecruitmentPortal.Repository.Models;
@@ -10,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -33,6 +35,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ISharedService, SharedService>();
+builder.Services.AddScoped<ICompanyService, CompanyService>();
 
 builder.Services.AddScoped<JwtTokenHelper>();
 
@@ -44,6 +47,10 @@ builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
 builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
 builder.Services.AddScoped<ICountryRepository, CountryRepository>();
 builder.Services.AddScoped<IStateRepository, StateRepository>();
+builder.Services.AddScoped<ICompanyLocationRepository, CompanyLocationRepository>();
+builder.Services.AddScoped<ICompanySocialMediumRepository, CompanySocialMediumRepository>();
+builder.Services.AddScoped<ICompanyStatusRepository, CompanyStatusRepository>();
+
 
 var app = builder.Build();
 
@@ -59,6 +66,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseMiddleware<JwtMiddleware>();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 app.Run();

@@ -41,4 +41,23 @@ public class JwtTokenHelper
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+
+
+    public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
+    {
+        JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+        byte[] key = Encoding.UTF8.GetBytes(_configuration["Jwt:Key"] ?? "");
+
+        TokenValidationParameters validationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(key),
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ClockSkew = TimeSpan.Zero // Disable clock skew for testing
+        };
+
+        SecurityToken securityToken;
+        return tokenHandler.ValidateToken(token, validationParameters, out securityToken);
+    }
 }

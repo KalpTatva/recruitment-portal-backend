@@ -33,6 +33,12 @@ public partial class Company
 
     public int? CreatedById { get; set; }
 
+    public long? Phone { get; set; }
+
+    public string? ImageUrl { get; set; }
+
+    public string CountryCode { get; set; } = null!;
+
     public virtual ICollection<CompanyLocation> CompanyLocations { get; set; } = new List<CompanyLocation>();
 
     public virtual ICollection<CompanySocialMedium> CompanySocialMedia { get; set; } = new List<CompanySocialMedium>();

@@ -12,6 +12,9 @@ public class UnitOfWork : IUnitOfWork
     public ICompanyRepository companyRepository { get; set; }
     public ICountryRepository countryRepository { get; set; }
     public IStateRepository stateRepository { get; set; }
+    public ICompanyLocationRepository companyLocationRepository { get; set; }
+    public ICompanySocialMediumRepository companySocialMediumRepository { get; set; }
+    public ICompanyStatusRepository companyStatusRepository { get; set; }
     public UnitOfWork(RecruitmentPortalContext context)
     {
         _context = context;
@@ -20,6 +23,10 @@ public class UnitOfWork : IUnitOfWork
         companyRepository = new CompanyRepository(_context);
         countryRepository = new CountryRepository(_context);
         stateRepository = new StateRepository(_context);
+        companyLocationRepository = new CompanyLocationRepository(_context);
+        companySocialMediumRepository = new CompanySocialMediumRepository(_context);
+        companyStatusRepository = new CompanyStatusRepository(_context);
+
     }
 
     public async Task<int> SaveChanges()

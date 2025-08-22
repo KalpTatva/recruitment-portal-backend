@@ -81,10 +81,18 @@ public partial class RecruitmentPortalContext : DbContext
             entity.Property(e => e.CompanyWebsite)
                 .HasMaxLength(500)
                 .IsUnicode(false);
+            entity.Property(e => e.CountryCode)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .HasDefaultValue("00");
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.CreatedById).HasDefaultValue(0);
             entity.Property(e => e.DeletedById).HasDefaultValue(0);
             entity.Property(e => e.Description).IsUnicode(false);
+            entity.Property(e => e.ImageUrl)
+                .HasMaxLength(500)
+                .IsUnicode(false)
+                .HasColumnName("ImageURl");
             entity.Property(e => e.IsDeleted).HasDefaultValue(false);
             entity.Property(e => e.Location)
                 .HasMaxLength(255)

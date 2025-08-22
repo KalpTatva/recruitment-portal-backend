@@ -1,0 +1,109 @@
+using Microsoft.AspNetCore.Mvc;
+using RecruitmentPortal.Repository.ViewModels;
+using RecruitmentPortal.Service.Interfaces;
+namespace RecruitmentPortal.API.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class CompanyController : ControllerBase
+{
+    private readonly ICompanyService _companyServices;
+
+    public CompanyController(ICompanyService companyServices)
+    {
+        _companyServices = companyServices;
+    }
+
+    [Route("get-company-details-by-email")]
+    [HttpGet]
+    public async Task<IActionResult> GetCompanyDetailsByEmail()
+    {
+        try
+        {
+            string? Email = HttpContext.Items["Email"]?.ToString();
+
+            if (Email == null)
+            {
+                return Unauthorized(new { message = "Invalid or missing token" });
+            }
+
+            ResponseViewModel<CompanyDetailsViewModel> companyResponse = await _companyServices.GetCompanyDetailsByEmail(Email);
+            if (!companyResponse.Success)
+            {
+                return BadRequest(new ApiResponse<string>
+                {
+                    Success = false,
+                    Message = companyResponse.Message ?? "Failed to retrieve company details.",
+                    Data = null,
+                    Errors = null
+                });
+            }
+            return Ok(new ApiResponse<CompanyDetailsViewModel>
+            {
+                Success = true,
+                Message = companyResponse.Message ?? "",
+                Data = companyResponse.data,
+                Errors = null
+            });
+
+        }
+        catch (Exception e)
+        {
+            return BadRequest(new ApiResponse<string>
+            {
+                Success = false,
+                Message = $"500 : Error occured, {e.Message}",
+                Data = null
+            });
+        }
+    }
+
+    [Route("edit-company-details")]
+    [HttpPut]
+    public async Task<IActionResult> EditCompanyDetails(CompanyDetailsViewModel model)
+    {
+        try
+        {
+            string? Email = HttpContext.Items["Email"]?.ToString();
+
+            if (Email == null)
+            {
+                return Unauthorized(new { message = "Invalid or missing token" });
+            }
+
+            if (ModelState.IsValid)
+            {
+                ResponseViewModel<string> response = await _companyServices.EditCompanyDetails(model);
+                if (response.Success)
+                {
+                    return Ok(new ApiResponse<string> { Success = true, Message = response?.Message ?? "", Data = null, Errors = null });
+                }
+                return BadRequest(new ApiResponse<string> { Success = false, Message = response?.Message ?? "", Data = null, Errors = null });
+            }
+            else
+            {
+                List<string> errorsList = ModelState.Values
+                            .SelectMany(v => v.Errors)
+                            .Select(e => e.ErrorMessage)
+                            .ToList();
+                return BadRequest(new ApiResponse<string>
+                {
+                    Success = false,
+                    Message = "Invalid Company Details data.",
+                    Data = null,
+                    Errors = errorsList
+                });
+            }
+
+        }
+        catch (Exception e)
+        {
+            return BadRequest(new ApiResponse<string>
+            {
+                Success = false,
+                Message = $"500 : Error occured, {e.Message}",
+                Data = null
+            });
+        }
+    }
+}
