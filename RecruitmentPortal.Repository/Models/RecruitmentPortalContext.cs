@@ -333,6 +333,11 @@ public partial class RecruitmentPortalContext : DbContext
             entity.HasOne(d => d.State).WithMany(p => p.Profiles)
                 .HasForeignKey(d => d.StateId)
                 .HasConstraintName("FK__Profile__StateId__52593CB8");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Profiles)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Profile_Users");
         });
 
         modelBuilder.Entity<Skill>(entity =>
@@ -402,11 +407,6 @@ public partial class RecruitmentPortalContext : DbContext
             entity.Property(e => e.UserName)
                 .HasMaxLength(255)
                 .IsUnicode(false);
-
-            entity.HasOne(d => d.Profile).WithMany(p => p.Users)
-                .HasForeignKey(d => d.ProfileId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Users__ProfileId__32E0915F");
         });
 
         OnModelCreatingPartial(modelBuilder);

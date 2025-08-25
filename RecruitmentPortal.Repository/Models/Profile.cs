@@ -47,11 +47,13 @@ public partial class Profile
 
     public bool? IsDeleted { get; set; }
 
+    public int UserId { get; set; }
+
     public virtual City? City { get; set; }
 
     public virtual Country? Country { get; set; }
 
     public virtual State? State { get; set; }
 
-    public virtual ICollection<User> Users { get; set; } = new List<User>();
+    public virtual User User { get; set; } = null!;
 }

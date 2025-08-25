@@ -15,8 +15,6 @@ public partial class User
 
     public string Password { get; set; } = null!;
 
-    public int ProfileId { get; set; }
-
     public DateTime? CreatedAt { get; set; }
 
     public DateTime? ModifiedAt { get; set; }
@@ -35,5 +33,5 @@ public partial class User
 
     public virtual ICollection<ExperienceUserMapping> ExperienceUserMappings { get; set; } = new List<ExperienceUserMapping>();
 
-    public virtual Profile Profile { get; set; } = null!;
+    public virtual ICollection<Profile> Profiles { get; set; } = new List<Profile>();
 }

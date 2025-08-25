@@ -92,14 +92,6 @@ public class AuthService : IAuthService
             {
                 throw new Exception("Phone already exists! please try another one!");
             }
-            // add phone into profile
-            Profile profile = new Profile
-            {
-                Phone = register.phone,
-                CountryCode = register.countryCode
-            };
-
-            await _unitOfWork.profileRepository.AddAsync(profile);
 
             // add other values in users
             User user = new User
@@ -107,11 +99,20 @@ public class AuthService : IAuthService
                 Email = register.email,
                 Password = BCrypt.Net.BCrypt.EnhancedHashPassword(register.password),
                 UserName = register.userName,
-                Role = (int)RoleEnum.Candidate,
-                ProfileId = profile.ProfileId,
+                Role = (int)RoleEnum.Candidate
 
             };
             await _unitOfWork.userRepository.AddAsync(user);
+
+            // add phone into profile
+            Profile profile = new Profile
+            {
+                Phone = register.phone,
+                CountryCode = register.countryCode,
+                UserId = user.UserId
+            };
+
+            await _unitOfWork.profileRepository.AddAsync(profile);
 
             return new ResponseViewModel<string>
             {
@@ -168,9 +169,9 @@ public class AuthService : IAuthService
             Company newCompany = new Company
             {
                 Phone = company.phone,
-                CountryCode = company.countryCode,
                 UserId = user.UserId,
                 CompanyName = company.companyName,
+                CountryCode = company.countryCode,
                 CompanyType = company.CompanyType,
                 Description = company.companyDescription,
                 CompanyWebsite = company.companyWebsite,
