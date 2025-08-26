@@ -39,9 +39,15 @@ public partial class Company
 
     public string CountryCode { get; set; } = null!;
 
+    public virtual ICollection<CompanyHistory> CompanyHistories { get; set; } = new List<CompanyHistory>();
+
     public virtual ICollection<CompanyLocation> CompanyLocations { get; set; } = new List<CompanyLocation>();
 
+    public virtual ICollection<CompanyLocationsHistory> CompanyLocationsHistories { get; set; } = new List<CompanyLocationsHistory>();
+
     public virtual ICollection<CompanySocialMedium> CompanySocialMedia { get; set; } = new List<CompanySocialMedium>();
+
+    public virtual ICollection<CompanyStatusHistory> CompanyStatusHistories { get; set; } = new List<CompanyStatusHistory>();
 
     public virtual ICollection<CompanyStatus> CompanyStatuses { get; set; } = new List<CompanyStatus>();
 

@@ -19,11 +19,17 @@ public partial class RecruitmentPortalContext : DbContext
 
     public virtual DbSet<Company> Companies { get; set; }
 
+    public virtual DbSet<CompanyHistory> CompanyHistories { get; set; }
+
     public virtual DbSet<CompanyLocation> CompanyLocations { get; set; }
+
+    public virtual DbSet<CompanyLocationsHistory> CompanyLocationsHistories { get; set; }
 
     public virtual DbSet<CompanySocialMedium> CompanySocialMedia { get; set; }
 
     public virtual DbSet<CompanyStatus> CompanyStatuses { get; set; }
+
+    public virtual DbSet<CompanyStatusHistory> CompanyStatusHistories { get; set; }
 
     public virtual DbSet<Country> Countries { get; set; }
 
@@ -37,6 +43,8 @@ public partial class RecruitmentPortalContext : DbContext
 
     public virtual DbSet<Profile> Profiles { get; set; }
 
+    public virtual DbSet<ProfileHistory> ProfileHistories { get; set; }
+
     public virtual DbSet<Skill> Skills { get; set; }
 
     public virtual DbSet<SkillsExperienceMapping> SkillsExperienceMappings { get; set; }
@@ -44,6 +52,8 @@ public partial class RecruitmentPortalContext : DbContext
     public virtual DbSet<State> States { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
+
+    public virtual DbSet<UsersHistory> UsersHistories { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -105,6 +115,54 @@ public partial class RecruitmentPortalContext : DbContext
                 .HasConstraintName("FK__company__UserId__5CD6CB2B");
         });
 
+        modelBuilder.Entity<CompanyHistory>(entity =>
+        {
+            entity.HasKey(e => e.CompanyHistoryId).HasName("PK__company___33794629CE93EA0C");
+
+            entity.ToTable("company_History");
+
+            entity.Property(e => e.CompanyHistoryId).HasColumnName("Company_HistoryId");
+            entity.Property(e => e.CompanyName)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.CompanyType)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.CompanyWebsite)
+                .HasMaxLength(500)
+                .IsUnicode(false);
+            entity.Property(e => e.CountryCode)
+                .HasMaxLength(10)
+                .IsUnicode(false);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.CreatedById).HasDefaultValue(0);
+            entity.Property(e => e.DeletedById).HasDefaultValue(0);
+            entity.Property(e => e.Description).IsUnicode(false);
+            entity.Property(e => e.ImageUrl)
+                .HasMaxLength(500)
+                .IsUnicode(false)
+                .HasColumnName("ImageURl");
+            entity.Property(e => e.Location)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.ModifiedById).HasDefaultValue(0);
+            entity.Property(e => e.Operation)
+                .HasMaxLength(3)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("operation");
+
+            entity.HasOne(d => d.Company).WithMany(p => p.CompanyHistories)
+                .HasForeignKey(d => d.CompanyId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__company_H__Compa__25518C17");
+
+            entity.HasOne(d => d.User).WithMany(p => p.CompanyHistories)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__company_H__UserI__2645B050");
+        });
+
         modelBuilder.Entity<CompanyLocation>(entity =>
         {
             entity.HasKey(e => e.CompanyLocationId).HasName("PK__CompanyL__7496FF4DA24A63ED");
@@ -117,6 +175,11 @@ public partial class RecruitmentPortalContext : DbContext
             entity.Property(e => e.DeletedById).HasDefaultValue(0);
             entity.Property(e => e.IsDeleted).HasDefaultValue(false);
             entity.Property(e => e.ModifiedById).HasDefaultValue(0);
+
+            entity.HasOne(d => d.City).WithMany(p => p.CompanyLocations)
+                .HasForeignKey(d => d.CityId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CompanyLocations_City");
 
             entity.HasOne(d => d.Company).WithMany(p => p.CompanyLocations)
                 .HasForeignKey(d => d.CompanyId)
@@ -132,6 +195,51 @@ public partial class RecruitmentPortalContext : DbContext
                 .HasForeignKey(d => d.StateId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__CompanyLo__State__787EE5A0");
+        });
+
+        modelBuilder.Entity<CompanyLocationsHistory>(entity =>
+        {
+            entity.HasKey(e => e.CompanyLocationHistoryId).HasName("PK__CompanyL__DDB13B6FDC6AED69");
+
+            entity.ToTable("CompanyLocations_History");
+
+            entity.Property(e => e.CompanyLocationHistoryId).HasColumnName("CompanyLocation_HistoryId");
+            entity.Property(e => e.Address)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.CreatedById).HasDefaultValue(0);
+            entity.Property(e => e.DeletedById).HasDefaultValue(0);
+            entity.Property(e => e.ModifiedById).HasDefaultValue(0);
+            entity.Property(e => e.Operation)
+                .HasMaxLength(3)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("operation");
+
+            entity.HasOne(d => d.City).WithMany(p => p.CompanyLocationsHistories)
+                .HasForeignKey(d => d.CityId)
+                .HasConstraintName("FK__CompanyLo__CityI__625A9A57");
+
+            entity.HasOne(d => d.Company).WithMany(p => p.CompanyLocationsHistories)
+                .HasForeignKey(d => d.CompanyId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__CompanyLo__Compa__2FCF1A8A");
+
+            entity.HasOne(d => d.CompanyLocation).WithMany(p => p.CompanyLocationsHistories)
+                .HasForeignKey(d => d.CompanyLocationId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__CompanyLo__Compa__2EDAF651");
+
+            entity.HasOne(d => d.Country).WithMany(p => p.CompanyLocationsHistories)
+                .HasForeignKey(d => d.CountryId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__CompanyLo__Count__30C33EC3");
+
+            entity.HasOne(d => d.State).WithMany(p => p.CompanyLocationsHistories)
+                .HasForeignKey(d => d.StateId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__CompanyLo__State__31B762FC");
         });
 
         modelBuilder.Entity<CompanySocialMedium>(entity =>
@@ -182,6 +290,38 @@ public partial class RecruitmentPortalContext : DbContext
                 .HasForeignKey(d => d.CompanyId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__CompanySt__Compa__07C12930");
+        });
+
+        modelBuilder.Entity<CompanyStatusHistory>(entity =>
+        {
+            entity.HasKey(e => e.CompanyStatusHistoryId).HasName("PK__CompanyS__220EC10FC0DB489C");
+
+            entity.ToTable("CompanyStatus_History");
+
+            entity.Property(e => e.CompanyStatusHistoryId).HasColumnName("CompanyStatus_HistoryId");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.CreatedById).HasDefaultValue(0);
+            entity.Property(e => e.DeletedById).HasDefaultValue(0);
+            entity.Property(e => e.IndustryType)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.ModifiedById).HasDefaultValue(0);
+            entity.Property(e => e.Operation)
+                .HasMaxLength(3)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("operation");
+            entity.Property(e => e.TotalRevenue).HasColumnType("numeric(18, 0)");
+
+            entity.HasOne(d => d.Company).WithMany(p => p.CompanyStatusHistories)
+                .HasForeignKey(d => d.CompanyId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__CompanySt__Compa__3B40CD36");
+
+            entity.HasOne(d => d.CompanyStatus).WithMany(p => p.CompanyStatusHistories)
+                .HasForeignKey(d => d.CompanyStatusId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__CompanySt__Compa__3A4CA8FD");
         });
 
         modelBuilder.Entity<Country>(entity =>
@@ -340,6 +480,61 @@ public partial class RecruitmentPortalContext : DbContext
                 .HasConstraintName("FK_Profile_Users");
         });
 
+        modelBuilder.Entity<ProfileHistory>(entity =>
+        {
+            entity.HasKey(e => e.ProfileHistoryId).HasName("PK__Profile___666B8B39A7E7E6F8");
+
+            entity.ToTable("Profile_History");
+
+            entity.Property(e => e.ProfileHistoryId).HasColumnName("Profile_HistoryId");
+            entity.Property(e => e.Address)
+                .HasMaxLength(500)
+                .IsUnicode(false);
+            entity.Property(e => e.CountryCode)
+                .HasMaxLength(10)
+                .IsUnicode(false);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.CreatedById).HasDefaultValue(0);
+            entity.Property(e => e.DeletedById).HasDefaultValue(0);
+            entity.Property(e => e.FirstName)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.ImageUrl)
+                .HasMaxLength(500)
+                .IsUnicode(false)
+                .HasColumnName("ImageURl");
+            entity.Property(e => e.LastName)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.MiddleName)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.ModifiedById).HasDefaultValue(0);
+            entity.Property(e => e.Operation)
+                .HasMaxLength(3)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("operation");
+            entity.Property(e => e.Pincode).HasColumnName("pincode");
+
+            entity.HasOne(d => d.City).WithMany(p => p.ProfileHistories)
+                .HasForeignKey(d => d.CityId)
+                .HasConstraintName("FK__Profile_H__CityI__1CBC4616");
+
+            entity.HasOne(d => d.Country).WithMany(p => p.ProfileHistories)
+                .HasForeignKey(d => d.CountryId)
+                .HasConstraintName("FK__Profile_H__Count__1AD3FDA4");
+
+            entity.HasOne(d => d.Profile).WithMany(p => p.ProfileHistories)
+                .HasForeignKey(d => d.ProfileId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Profile_H__Profi__19DFD96B");
+
+            entity.HasOne(d => d.State).WithMany(p => p.ProfileHistories)
+                .HasForeignKey(d => d.StateId)
+                .HasConstraintName("FK__Profile_H__State__1BC821DD");
+        });
+
         modelBuilder.Entity<Skill>(entity =>
         {
             entity.HasKey(e => e.SkillId).HasName("PK__Skills__DFA0918799D3EBA4");
@@ -390,6 +585,12 @@ public partial class RecruitmentPortalContext : DbContext
         {
             entity.HasKey(e => e.UserId).HasName("PK__Users__1788CC4C6CBE4D87");
 
+            entity.ToTable(tb =>
+                {
+                    tb.HasTrigger("trg_user_history_ins_del");
+                    tb.HasTrigger("trg_user_history_mod");
+                });
+
             entity.HasIndex(e => e.Email, "UQ__Users__A9D10534D05FAD47").IsUnique();
 
             entity.HasIndex(e => e.UserName, "UQ__Users__C9F284562985F4BD").IsUnique();
@@ -407,6 +608,35 @@ public partial class RecruitmentPortalContext : DbContext
             entity.Property(e => e.UserName)
                 .HasMaxLength(255)
                 .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<UsersHistory>(entity =>
+        {
+            entity.HasKey(e => e.UserHistoryId).HasName("PK__Users_Hi__454942E713835121");
+
+            entity.ToTable("Users_History");
+
+            entity.Property(e => e.UserHistoryId).HasColumnName("User_HistoryId");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.CreatedById).HasDefaultValue(0);
+            entity.Property(e => e.DeletedById).HasDefaultValue(0);
+            entity.Property(e => e.Email)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.ModifiedById).HasDefaultValue(0);
+            entity.Property(e => e.Operation)
+                .HasMaxLength(3)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("operation");
+            entity.Property(e => e.UserName)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.User).WithMany(p => p.UsersHistories)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Users_His__UserI__114A936A");
         });
 
         OnModelCreatingPartial(modelBuilder);

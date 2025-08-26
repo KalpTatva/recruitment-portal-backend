@@ -67,6 +67,7 @@ public class CompanyService : ICompanyService
             company.CompanyWebsite = companyDetails.CompanyWebsite;
             company.Phone = companyDetails.Phone;
             company.CountryCode = companyDetails?.countryCode ?? "";
+
             company.ModifiedAt = DateTime.Now;
             company.ModifiedById = companyDetails?.UserId;
 
@@ -84,7 +85,9 @@ public class CompanyService : ICompanyService
                     TotalMaleEmployees = companyDetails.TotalMaleEmployees,
                     TotalFemaleEmployees = companyDetails.TotalFemaleEmployees,
                     TotalOtherEmployees = companyDetails.TotalOthersEmployees,
-                    TotalRevenue = companyDetails.TotalRevenue
+                    TotalRevenue = companyDetails.TotalRevenue,
+
+                    CreatedById = companyDetails.UserId
                 };
                 await _unitOfWork.companyStatusRepository.AddAsync(companyStatus);
             }
@@ -98,6 +101,9 @@ public class CompanyService : ICompanyService
                 companyStatus.TotalFemaleEmployees = companyDetails.TotalFemaleEmployees;
                 companyStatus.TotalOtherEmployees = companyDetails.TotalOthersEmployees;
                 companyStatus.TotalRevenue = companyDetails.TotalRevenue;
+
+                companyStatus.ModifiedAt = DateTime.Now;
+                companyStatus.ModifiedById = companyDetails.UserId;
                 await _unitOfWork.companyStatusRepository.UpdateAsync(companyStatus);
             }
 
@@ -112,7 +118,9 @@ public class CompanyService : ICompanyService
                     LinkedIn = companyDetails.LinkedIn,
                     Twitter = companyDetails.Twitter,
                     FaceBook = companyDetails.Facebook,
-                    Medium = companyDetails.Medium
+                    Medium = companyDetails.Medium,
+
+                    CreatedById = companyDetails.UserId
                 };
                 await _unitOfWork.companySocialMediumRepository.AddAsync(companySocialMedia);
             }
@@ -122,6 +130,9 @@ public class CompanyService : ICompanyService
                 companySocialMedia.Twitter = companyDetails.Twitter;
                 companySocialMedia.FaceBook = companyDetails.Facebook;
                 companySocialMedia.Medium = companyDetails.Medium;
+
+                companySocialMedia.ModifiedAt = DateTime.Now;
+                companySocialMedia.ModifiedById = companyDetails.UserId;
                 await _unitOfWork.companySocialMediumRepository.UpdateAsync(companySocialMedia);
             }
 
@@ -130,18 +141,21 @@ public class CompanyService : ICompanyService
             // if not exists then add it
             // if existing deleted then remove it from the db
             // if existing updated then update it in the db
-            List<Repository.Models.CompanyLocation> existingLocations = await _unitOfWork.companyLocationRepository.FindAllAsync(x => x.CompanyId == companyDetails.CompanyId);
+            List<Repository.Models.CompanyLocation> existingLocations = await _unitOfWork.companyLocationRepository.FindAllAsync(x => x.CompanyId == companyDetails.CompanyId && x.IsDeleted == false);
             List<Repository.Models.CompanyLocation> updatedLocations = new List<Repository.Models.CompanyLocation>();
             foreach (Repository.ViewModels.CompanyLocation location in companyDetails.CompanyLocations)
             {
-                Repository.Models.CompanyLocation? existingLocation = existingLocations.FirstOrDefault(x => x.CountryId == location.CountryId && x.StateId == location.StateId);
+                Repository.Models.CompanyLocation? existingLocation = existingLocations.FirstOrDefault(x => x.CompanyLocationId == location.CompanyLocationId);
+                
                 if (existingLocation != null)
                 {
                     // Update existing location
-                    existingLocation.Address = location.Address;
+                    existingLocation.Address = location.Address.Trim().ToLower();
+                    existingLocation.ModifiedAt = DateTime.Now;
+                    existingLocation.ModifiedById = companyDetails.UserId;
                     updatedLocations.Add(existingLocation);
                 }
-                else
+                else if (location.CompanyLocationId == 0)
                 {
                     // Add new location
                     Repository.Models.CompanyLocation newLocation = new Repository.Models.CompanyLocation
@@ -149,7 +163,9 @@ public class CompanyService : ICompanyService
                         CompanyId = companyDetails.CompanyId,
                         CountryId = location.CountryId,
                         StateId = location.StateId,
-                        Address = location.Address
+                        CityId = location.CityId,
+                        Address = location.Address.Trim().ToLower(),
+                        CreatedById = companyDetails.UserId
                     };
                     updatedLocations.Add(newLocation);
                 }
@@ -157,15 +173,20 @@ public class CompanyService : ICompanyService
             // Delete locations that are not in the updated list
             foreach (Repository.Models.CompanyLocation existingLocation in existingLocations)
             {
-                if (!updatedLocations.Any(x => x.CountryId == existingLocation.CountryId && x.StateId == existingLocation.StateId))
+                if (!updatedLocations.Any(
+                    x => x.CompanyLocationId == existingLocation.CompanyLocationId
+                ))
                 {
-                    await _unitOfWork.companyLocationRepository.DeleteAsync(existingLocation);
+                    existingLocation.IsDeleted = true;
+                    existingLocation.DeletedAt = DateTime.Now;
+                    existingLocation.DeletedById = companyDetails.UserId;
+                    await _unitOfWork.companyLocationRepository.UpdateAsync(existingLocation);
                 }
             }
             // Add or update locations in the database
             foreach (Repository.Models.CompanyLocation updatedLocation in updatedLocations)
             {
-                Repository.Models.CompanyLocation? existingLocation = existingLocations.FirstOrDefault(x => x.CountryId == updatedLocation.CountryId && x.StateId == updatedLocation.StateId);
+                Repository.Models.CompanyLocation? existingLocation = existingLocations.FirstOrDefault(x => x.CompanyLocationId == updatedLocation.CompanyLocationId);
                 if (existingLocation != null)
                 {
                     // Update existing location

@@ -96,4 +96,45 @@ public class SharedController : ControllerBase
     }
 
 
+    [Route("get-city-by-state/{stateId}")]
+    [HttpGet]
+    public async Task<IActionResult> GetCityListBystateId(int stateId)
+    {
+        try
+        {
+            ResponseViewModel<City> stateResponse = await _sharedService.GetCityListBystateId(stateId);
+            if (!stateResponse.Success)
+            {
+                return BadRequest(
+                    new ApiResponse<string>
+                    {
+                        Success = false,
+                        Message = stateResponse.Message ?? "Failed to retrieve cities.",
+                        Data = null,
+                        Errors = null
+                    }
+                );
+            }
+            return Ok(
+                new ApiResponse<List<City>>
+                {
+                    Success = true,
+                    Message = stateResponse.Message ?? "",
+                    Data = stateResponse.dataList,
+                    Errors = null
+                }
+            );
+        }
+        catch (Exception e)
+        {
+            return BadRequest(new ApiResponse<string>
+            {
+                Success = false,
+                Message = $"{e.Message}",
+                Data = null
+            });
+        }
+    }
+
+
 }

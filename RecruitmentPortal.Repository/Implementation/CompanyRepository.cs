@@ -70,11 +70,13 @@ public class CompanyRepository : GenericRepository<Company>, ICompanyRepository
             company.Medium = companySocialMedia?.Medium ?? "";
 
             List<ViewModels.CompanyLocation> companyLocations = await _context.CompanyLocations
-                .Where(cl => cl.CompanyId == company.CompanyId)
+                .Where(cl => cl.CompanyId == company.CompanyId && cl.IsDeleted == false)
                 .Select(cl => new ViewModels.CompanyLocation
                 {
+                    CompanyLocationId = cl.CompanyLocationId,
                     CountryId = cl.CountryId,
                     StateId = cl.StateId,
+                    CityId = cl.CityId, 
                     Address = cl.Address
                 })
                 .ToListAsync();

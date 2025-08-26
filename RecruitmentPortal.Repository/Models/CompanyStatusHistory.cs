@@ -3,8 +3,10 @@ using System.Collections.Generic;
 
 namespace RecruitmentPortal.Repository.Models;
 
-public partial class CompanyStatus
+public partial class CompanyStatusHistory
 {
+    public int CompanyStatusHistoryId { get; set; }
+
     public int CompanyStatusId { get; set; }
 
     public int CompanyId { get; set; }
@@ -27,19 +29,19 @@ public partial class CompanyStatus
 
     public DateTime? CreatedAt { get; set; }
 
+    public int? CreatedById { get; set; }
+
     public DateTime? ModifiedAt { get; set; }
-
-    public DateTime? DeletedAt { get; set; }
-
-    public bool? IsDeleted { get; set; }
 
     public int? ModifiedById { get; set; }
 
+    public DateTime? DeletedAt { get; set; }
+
     public int? DeletedById { get; set; }
 
-    public int? CreatedById { get; set; }
+    public string? Operation { get; set; }
 
     public virtual Company Company { get; set; } = null!;
 
-    public virtual ICollection<CompanyStatusHistory> CompanyStatusHistories { get; set; } = new List<CompanyStatusHistory>();
+    public virtual CompanyStatus CompanyStatus { get; set; } = null!;
 }

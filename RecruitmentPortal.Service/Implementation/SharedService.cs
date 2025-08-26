@@ -30,12 +30,12 @@ public class SharedService : ISharedService
             throw new Exception($"Error retrieving countries: {e.Message}");
         }
     }
-    
+
     public async Task<ResponseViewModel<State>> GetStateListByCountryId(int countryId)
     {
         try
         {
-            var states = await _unitOfWork.stateRepository.GetAllListByIdAsync(s => s.CountryId == countryId);
+            List<State> states = await _unitOfWork.stateRepository.GetAllListByIdAsync(s => s.CountryId == countryId);
             return new ResponseViewModel<State>
             {
                 Success = true,
@@ -48,4 +48,24 @@ public class SharedService : ISharedService
             throw new Exception($"Error retrieving states for country ID {countryId}: {e.Message}");
         }
     }
+
+    public async Task<ResponseViewModel<City>> GetCityListBystateId(int stateId)
+    {
+        try
+        {
+            List<City> cities = await _unitOfWork.cityRepository.GetAllListByIdAsync(x => x.StateId == stateId);
+            return new ResponseViewModel<City>
+            {
+                Success = true,
+                Message = "cities retrieved successfully.",
+                dataList = cities
+            };
+        }
+        catch (Exception e)
+        {
+            throw new Exception($"Error retrieving cities for state ID {stateId}: {e.Message}");
+        }
+    }
+    
+
 }

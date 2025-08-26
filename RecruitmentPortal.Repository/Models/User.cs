@@ -29,9 +29,13 @@ public partial class User
 
     public virtual ICollection<Company> Companies { get; set; } = new List<Company>();
 
+    public virtual ICollection<CompanyHistory> CompanyHistories { get; set; } = new List<CompanyHistory>();
+
     public virtual ICollection<EducationUserMapping> EducationUserMappings { get; set; } = new List<EducationUserMapping>();
 
     public virtual ICollection<ExperienceUserMapping> ExperienceUserMappings { get; set; } = new List<ExperienceUserMapping>();
 
     public virtual ICollection<Profile> Profiles { get; set; } = new List<Profile>();
+
+    public virtual ICollection<UsersHistory> UsersHistories { get; set; } = new List<UsersHistory>();
 }

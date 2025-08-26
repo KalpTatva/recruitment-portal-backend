@@ -12,6 +12,7 @@ public interface IUnitOfWork : IDisposable
     ICompanyLocationRepository companyLocationRepository { get; set; }
     ICompanySocialMediumRepository companySocialMediumRepository { get; set; }
     ICompanyStatusRepository companyStatusRepository { get; set; }
+    ICityRepository cityRepository { get; set; }
     Task<int> SaveChanges();
     Task<IDbContextTransaction> BeginTransactionAsync();
     Task CommitAsync();

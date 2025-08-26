@@ -15,6 +15,7 @@ public class UnitOfWork : IUnitOfWork
     public ICompanyLocationRepository companyLocationRepository { get; set; }
     public ICompanySocialMediumRepository companySocialMediumRepository { get; set; }
     public ICompanyStatusRepository companyStatusRepository { get; set; }
+    public ICityRepository cityRepository { get; set; }
     public UnitOfWork(RecruitmentPortalContext context)
     {
         _context = context;
@@ -23,6 +24,7 @@ public class UnitOfWork : IUnitOfWork
         companyRepository = new CompanyRepository(_context);
         countryRepository = new CountryRepository(_context);
         stateRepository = new StateRepository(_context);
+        cityRepository = new CityRepository(_context);
         companyLocationRepository = new CompanyLocationRepository(_context);
         companySocialMediumRepository = new CompanySocialMediumRepository(_context);
         companyStatusRepository = new CompanyStatusRepository(_context);

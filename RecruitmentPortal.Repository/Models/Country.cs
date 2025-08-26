@@ -11,6 +11,10 @@ public partial class Country
 
     public virtual ICollection<CompanyLocation> CompanyLocations { get; set; } = new List<CompanyLocation>();
 
+    public virtual ICollection<CompanyLocationsHistory> CompanyLocationsHistories { get; set; } = new List<CompanyLocationsHistory>();
+
+    public virtual ICollection<ProfileHistory> ProfileHistories { get; set; } = new List<ProfileHistory>();
+
     public virtual ICollection<Profile> Profiles { get; set; } = new List<Profile>();
 
     public virtual ICollection<State> States { get; set; } = new List<State>();
