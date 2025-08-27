@@ -80,7 +80,11 @@ public partial class RecruitmentPortalContext : DbContext
         {
             entity.HasKey(e => e.CompanyId).HasName("PK__company__2D971CACA6D2D6EC");
 
-            entity.ToTable("company");
+            entity.ToTable("company", tb =>
+                {
+                    tb.HasTrigger("trg_company_history_ins_del");
+                    tb.HasTrigger("trg_company_history_mod");
+                });
 
             entity.Property(e => e.CompanyName)
                 .HasMaxLength(255)
@@ -166,6 +170,12 @@ public partial class RecruitmentPortalContext : DbContext
         modelBuilder.Entity<CompanyLocation>(entity =>
         {
             entity.HasKey(e => e.CompanyLocationId).HasName("PK__CompanyL__7496FF4DA24A63ED");
+
+            entity.ToTable(tb =>
+                {
+                    tb.HasTrigger("trg_companyLocation_history_ins_del");
+                    tb.HasTrigger("trg_companyLocation_history_mod");
+                });
 
             entity.Property(e => e.Address)
                 .HasMaxLength(255)
@@ -274,7 +284,11 @@ public partial class RecruitmentPortalContext : DbContext
         {
             entity.HasKey(e => e.CompanyStatusId).HasName("PK__CompanyS__2104C34EE4076872");
 
-            entity.ToTable("CompanyStatus");
+            entity.ToTable("CompanyStatus", tb =>
+                {
+                    tb.HasTrigger("trg_companyStatus_history_ins_del");
+                    tb.HasTrigger("trg_companyStatus_history_ins_mod");
+                });
 
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.CreatedById).HasDefaultValue(0);
@@ -432,7 +446,11 @@ public partial class RecruitmentPortalContext : DbContext
         {
             entity.HasKey(e => e.ProfileId).HasName("PK__Profile__290C88E45A9045AD");
 
-            entity.ToTable("Profile");
+            entity.ToTable("Profile", tb =>
+                {
+                    tb.HasTrigger("trg_profile_history_ins_del");
+                    tb.HasTrigger("trg_profile_history_mod");
+                });
 
             entity.Property(e => e.Address)
                 .HasMaxLength(500)
