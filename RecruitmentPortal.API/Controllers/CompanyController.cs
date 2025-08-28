@@ -1,3 +1,4 @@
+using System.Drawing;
 using Microsoft.AspNetCore.Mvc;
 using RecruitmentPortal.Repository.ViewModels;
 using RecruitmentPortal.Service.Interfaces;
@@ -58,6 +59,54 @@ public class CompanyController : ControllerBase
         }
     }
 
+
+
+    [Route("get-company-profile-details-by-email")]
+    [HttpGet]
+    public async Task<IActionResult> GetCompanyProfileDetailsByEmail()
+    {
+        try
+        {
+            string? Email = HttpContext.Items["Email"]?.ToString();
+
+            if (Email == null)
+            {
+                return Unauthorized(new { message = "Invalid or missing token" });
+            }
+
+            ResponseViewModel<CompanyDetailsForProfileViewModel> companyResponse = await _companyServices.GetCompanyDetailsByEmailForProfile(Email);
+            if (!companyResponse.Success)
+            {
+                return BadRequest(new ApiResponse<string>
+                {
+                    Success = false,
+                    Message = companyResponse.Message ?? "Failed to retrieve company profile details.",
+                    Data = null,
+                    Errors = null
+                });
+            }
+
+            companyResponse.data.ImageUrl = $"{Request.Scheme}://{Request.Host}{companyResponse.data.ImageUrl}" ?? "";
+            return Ok(new ApiResponse<CompanyDetailsForProfileViewModel>
+            {
+                Success = true,
+                Message = companyResponse.Message ?? "",
+                Data = companyResponse.data,
+                Errors = null
+            });
+
+        }
+        catch (Exception e)
+        {
+            return BadRequest(new ApiResponse<string>
+            {
+                Success = false,
+                Message = $"500 : Error occured, {e.Message}",
+                Data = null
+            });
+        }
+    }
+
     [Route("edit-company-details")]
     [HttpPut]
     public async Task<IActionResult> EditCompanyDetails(CompanyDetailsViewModel model)
@@ -95,6 +144,60 @@ public class CompanyController : ControllerBase
                 });
             }
 
+        }
+        catch (Exception e)
+        {
+            return BadRequest(new ApiResponse<string>
+            {
+                Success = false,
+                Message = $"500 : Error occured, {e.Message}",
+                Data = null
+            });
+        }
+    }
+
+
+    [Route("upload-company-logo")]
+    [HttpPost]
+    public async Task<IActionResult> UploadCompanyImageLogo(IFormFile file)
+    {
+        try
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest(new ApiResponse<string>
+                {
+                    Success = false,
+                    Message = $"No file uploaded.",
+                    Data = null
+                });
+            }
+
+            string? Email = HttpContext.Items["Email"]?.ToString();
+
+            if (Email == null)
+            {
+                return Unauthorized(new { message = "Invalid or missing token" });
+            }
+
+            ResponseViewModel<string> response = await _companyServices.UploadCompanyLogo(file, Email);
+            if (response.Success)
+            {
+                return Ok(new ApiResponse<string>
+                {
+                    Success = true,
+                    Message = response?.Message ?? "",
+                    Data = $"{Request.Scheme}://{Request.Host}{response?.data ?? ""}",
+                    Errors = null
+                });
+            }
+            
+            return BadRequest(new ApiResponse<string>
+            {
+                Success = false,
+                Message = $"No file uploaded.",
+                Data = null
+            });
         }
         catch (Exception e)
         {

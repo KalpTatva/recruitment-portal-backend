@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using RecruitmentPortal.Repository.Implementation;
 using RecruitmentPortal.Repository.Interfaces;
 using RecruitmentPortal.Repository.Models;
@@ -9,9 +11,12 @@ namespace RecruitmentPortal.Service.Implementation;
 public class CompanyService : ICompanyService
 {
     private readonly IUnitOfWork _unitOfWork;
-    public CompanyService(IUnitOfWork unitOfWork)
+    private readonly IWebHostEnvironment _env;
+    public CompanyService(IUnitOfWork unitOfWork, IWebHostEnvironment env)
     {
         _unitOfWork = unitOfWork;
+        _env = env;
+
     }
 
     public async Task<ResponseViewModel<CompanyDetailsViewModel>> GetCompanyDetailsByEmail(string Email)
@@ -20,6 +25,81 @@ public class CompanyService : ICompanyService
         {
             ResponseViewModel<CompanyDetailsViewModel> response = new ResponseViewModel<CompanyDetailsViewModel>();
             CompanyDetailsViewModel companyDetails = await _unitOfWork.companyRepository.GetCompanyDetailsByEmail(Email);
+            if (companyDetails != null)
+            {
+                response.Success = true;
+                response.data = companyDetails;
+                response.Message = "Company details retrieved successfully.";
+            }
+            else
+            {
+                response.Success = false;
+                response.Message = "No company details found for the provided email.";
+            }
+            return response;
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message);
+        }
+    }
+
+    public async Task<ResponseViewModel<string>> UploadCompanyLogo(IFormFile file, string email)
+    {
+        try
+        {
+            string? uploadPath = Path.Combine(_env.WebRootPath, "uploads");
+            if (!Directory.Exists(uploadPath))
+                Directory.CreateDirectory(uploadPath);
+
+            string? fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+            string? filePath = Path.Combine(uploadPath, fileName);
+
+            using (FileStream? stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            User? user = await _unitOfWork.userRepository.FindAsync(x => x.Email == email.Trim().ToLower());
+            Company? company = user.UserId != 0 ? await _unitOfWork.companyRepository.FindAsync(x => x.UserId == user.UserId) : new Company() {};
+
+            if (company != null)
+            {
+                company.ImageUrl = $"/uploads/{fileName}";
+                company.ModifiedAt = DateTime.Now;
+                company.ModifiedById = user.UserId;
+                await _unitOfWork.companyRepository.UpdateAsync(company);
+            }
+
+            return new ResponseViewModel<string>
+            {
+                Success = true,
+                Message = "Image uploaded successfully!",
+                data = $"/uploads/{fileName}"
+            };
+
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message);
+        }
+    }
+
+    public async Task<ResponseViewModel<CompanyDetailsForProfileViewModel>> GetCompanyDetailsByEmailForProfile(string Email)
+    {
+        try
+        {
+            ResponseViewModel<CompanyDetailsForProfileViewModel> response = new ResponseViewModel<CompanyDetailsForProfileViewModel>();
+            CompanyDetailsForProfileViewModel companyDetails = await _unitOfWork.companyRepository.GetCompanyDetailsByEmailForProfile(Email);
+
+
+            // percentage of genders calculations
+            companyDetails.PercentMale = (companyDetails.TotalMaleEmployees * 100) / companyDetails.TotalEmployees;
+            companyDetails.PercentFemale = (companyDetails.TotalFemaleEmployees * 100) / companyDetails.TotalEmployees;
+            companyDetails.PercentOther = 100 - companyDetails.PercentMale - companyDetails.PercentFemale;
+
+
+
             if (companyDetails != null)
             {
                 response.Success = true;
@@ -146,7 +226,7 @@ public class CompanyService : ICompanyService
             foreach (Repository.ViewModels.CompanyLocation location in companyDetails.CompanyLocations)
             {
                 Repository.Models.CompanyLocation? existingLocation = existingLocations.FirstOrDefault(x => x.CompanyLocationId == location.CompanyLocationId);
-                
+
                 if (existingLocation != null)
                 {
                     // Update existing location
@@ -199,11 +279,11 @@ public class CompanyService : ICompanyService
                 }
             }
 
-            
+
             // Save changes to the database
             response.Success = true;
             response.Message = "Company details updated successfully.";
-            
+
             return response;
         }
         catch (Exception e)

@@ -54,6 +54,8 @@ builder.Services.AddScoped<ICompanyStatusRepository, CompanyStatusRepository>();
 
 var app = builder.Build();
 
+app.UseStaticFiles(); 
+
 // allowing all origin
 app.UseCors("AllowAllOrigin");
 
