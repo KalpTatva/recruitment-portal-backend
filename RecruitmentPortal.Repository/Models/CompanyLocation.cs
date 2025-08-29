@@ -39,5 +39,9 @@ public partial class CompanyLocation
 
     public virtual Country Country { get; set; } = null!;
 
+    public virtual ICollection<Job> Jobs { get; set; } = new List<Job>();
+
+    public virtual ICollection<JobsHistory> JobsHistories { get; set; } = new List<JobsHistory>();
+
     public virtual State State { get; set; } = null!;
 }

@@ -51,5 +51,9 @@ public partial class Company
 
     public virtual ICollection<CompanyStatus> CompanyStatuses { get; set; } = new List<CompanyStatus>();
 
+    public virtual ICollection<Job> Jobs { get; set; } = new List<Job>();
+
+    public virtual ICollection<JobsHistory> JobsHistories { get; set; } = new List<JobsHistory>();
+
     public virtual User User { get; set; } = null!;
 }

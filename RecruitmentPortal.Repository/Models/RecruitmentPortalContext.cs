@@ -41,6 +41,12 @@ public partial class RecruitmentPortalContext : DbContext
 
     public virtual DbSet<ExperienceUserMapping> ExperienceUserMappings { get; set; }
 
+    public virtual DbSet<Job> Jobs { get; set; }
+
+    public virtual DbSet<JobCategory> JobCategories { get; set; }
+
+    public virtual DbSet<JobsHistory> JobsHistories { get; set; }
+
     public virtual DbSet<Profile> Profiles { get; set; }
 
     public virtual DbSet<ProfileHistory> ProfileHistories { get; set; }
@@ -440,6 +446,105 @@ public partial class RecruitmentPortalContext : DbContext
             entity.HasOne(d => d.User).WithMany(p => p.ExperienceUserMappings)
                 .HasForeignKey(d => d.UserId)
                 .HasConstraintName("FK__Experienc__UserI__38996AB5");
+        });
+
+        modelBuilder.Entity<Job>(entity =>
+        {
+            entity.HasKey(e => e.JobId).HasName("PK__Jobs__056690C297282C99");
+
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.CreatedById).HasDefaultValue(0);
+            entity.Property(e => e.Degree)
+                .HasMaxLength(200)
+                .IsUnicode(false);
+            entity.Property(e => e.DeletedById).HasDefaultValue(0);
+            entity.Property(e => e.Experience)
+                .HasMaxLength(200)
+                .IsUnicode(false);
+            entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+            entity.Property(e => e.JobRole)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.JobTitle)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.MaxSalary).HasColumnType("numeric(18, 0)");
+            entity.Property(e => e.MinSalary).HasColumnType("numeric(18, 0)");
+            entity.Property(e => e.ModifiedById).HasDefaultValue(0);
+
+            entity.HasOne(d => d.Company).WithMany(p => p.Jobs)
+                .HasForeignKey(d => d.CompanyId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Jobs__CompanyId__7C1A6C5A");
+
+            entity.HasOne(d => d.CompanyLocation).WithMany(p => p.Jobs)
+                .HasForeignKey(d => d.CompanyLocationId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Jobs__CompanyLoc__7D0E9093");
+
+            entity.HasOne(d => d.JobCategory).WithMany(p => p.Jobs)
+                .HasForeignKey(d => d.JobCategoryId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Jobs__JobCategor__7E02B4CC");
+        });
+
+        modelBuilder.Entity<JobCategory>(entity =>
+        {
+            entity.HasKey(e => e.JobCategoryId).HasName("PK__JobCateg__302BAD2DF837C8E1");
+
+            entity.ToTable("JobCategory");
+
+            entity.Property(e => e.CategoryName)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<JobsHistory>(entity =>
+        {
+            entity.HasKey(e => e.JobHistoryId).HasName("PK__Jobs_His__4D0D6260D1D0242A");
+
+            entity.ToTable("Jobs_History");
+
+            entity.Property(e => e.JobHistoryId).HasColumnName("Job_HistoryId");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.CreatedById).HasDefaultValue(0);
+            entity.Property(e => e.Degree)
+                .HasMaxLength(200)
+                .IsUnicode(false);
+            entity.Property(e => e.DeletedById).HasDefaultValue(0);
+            entity.Property(e => e.Experience)
+                .HasMaxLength(200)
+                .IsUnicode(false);
+            entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+            entity.Property(e => e.JobRole)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.JobTitle)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.MaxSalary).HasColumnType("numeric(18, 0)");
+            entity.Property(e => e.MinSalary).HasColumnType("numeric(18, 0)");
+            entity.Property(e => e.ModifiedById).HasDefaultValue(0);
+
+            entity.HasOne(d => d.Company).WithMany(p => p.JobsHistories)
+                .HasForeignKey(d => d.CompanyId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Jobs_Hist__Compa__0697FACD");
+
+            entity.HasOne(d => d.CompanyLocation).WithMany(p => p.JobsHistories)
+                .HasForeignKey(d => d.CompanyLocationId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Jobs_Hist__Compa__078C1F06");
+
+            entity.HasOne(d => d.JobCategory).WithMany(p => p.JobsHistories)
+                .HasForeignKey(d => d.JobCategoryId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Jobs_Hist__JobCa__0880433F");
+
+            entity.HasOne(d => d.Job).WithMany(p => p.JobsHistories)
+                .HasForeignKey(d => d.JobId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Jobs_Hist__JobId__05A3D694");
         });
 
         modelBuilder.Entity<Profile>(entity =>
