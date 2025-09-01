@@ -61,7 +61,7 @@ public class CompanyService : ICompanyService
             }
 
             User? user = await _unitOfWork.userRepository.FindAsync(x => x.Email == email.Trim().ToLower());
-            Company? company = user.UserId != 0 ? await _unitOfWork.companyRepository.FindAsync(x => x.UserId == user.UserId) : new Company() {};
+            Company? company = user.UserId != 0 ? await _unitOfWork.companyRepository.FindAsync(x => x.UserId == user.UserId) : new Company() { };
 
             if (company != null)
             {
@@ -291,4 +291,43 @@ public class CompanyService : ICompanyService
             throw new Exception(e.Message);
         }
     }
+
+    public async Task<ResponseViewModel<CompanyLocationWithNameForProfileViewModel>> GetCompanyLocationsByEmail(string email)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                throw new Exception("Invalid or missing token");
+            }
+
+            User? user = await _unitOfWork.userRepository.FindAsync(x => x.Email == email.Trim().ToLower());
+            if (user == null)
+            {
+                throw new Exception("Invalid or missing token");
+            }
+
+            List<CompanyLocationWithNameForProfileViewModel> companyLocations = await _unitOfWork.companyLocationRepository.GetCompanyLocations(user.UserId);
+            if (companyLocations != null && companyLocations.Any())
+            {
+                return new ResponseViewModel<CompanyLocationWithNameForProfileViewModel>
+                {
+                    Success = true,
+                    Message = "company locations retrive successfully!",
+                    dataList = companyLocations,
+                };
+            }
+
+            return new ResponseViewModel<CompanyLocationWithNameForProfileViewModel>
+            {
+                Success = false,
+                Message = "company locations retrive successfully!",
+            };
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message);
+        }
+    }
+
 }

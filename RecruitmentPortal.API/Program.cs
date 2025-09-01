@@ -51,6 +51,10 @@ builder.Services.AddScoped<IStateRepository, StateRepository>();
 builder.Services.AddScoped<ICompanyLocationRepository, CompanyLocationRepository>();
 builder.Services.AddScoped<ICompanySocialMediumRepository, CompanySocialMediumRepository>();
 builder.Services.AddScoped<ICompanyStatusRepository, CompanyStatusRepository>();
+builder.Services.AddScoped<IDegreeRepository, DegreeRepository>();
+builder.Services.AddScoped<IJobRoleRepository, JobRoleRepository>();
+builder.Services.AddScoped<IJobTypeRepository, JobTypeRepository>();
+builder.Services.AddScoped<IJobCategoryRepository, JobCategoryRepository>();
 
 
 var app = builder.Build();

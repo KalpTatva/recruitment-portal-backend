@@ -15,15 +15,7 @@ public partial class Job
 
     public string JobTitle { get; set; } = null!;
 
-    public int JobType { get; set; }
-
     public string? JobDescription { get; set; }
-
-    public string? JobRole { get; set; }
-
-    public string? Experience { get; set; }
-
-    public string? Degree { get; set; }
 
     public string? Tags { get; set; }
 
@@ -49,11 +41,25 @@ public partial class Job
 
     public int? DeletedById { get; set; }
 
+    public int JobRoleId { get; set; }
+
+    public int JobTypeId { get; set; }
+
+    public int Experience { get; set; }
+
+    public int DegreeId { get; set; }
+
     public virtual Company Company { get; set; } = null!;
 
     public virtual CompanyLocation CompanyLocation { get; set; } = null!;
 
+    public virtual Degree Degree { get; set; } = null!;
+
     public virtual JobCategory JobCategory { get; set; } = null!;
+
+    public virtual JobRole JobRole { get; set; } = null!;
+
+    public virtual JobType JobType { get; set; } = null!;
 
     public virtual ICollection<JobsHistory> JobsHistories { get; set; } = new List<JobsHistory>();
 }

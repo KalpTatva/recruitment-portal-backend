@@ -59,8 +59,6 @@ public class CompanyController : ControllerBase
         }
     }
 
-
-
     [Route("get-company-profile-details-by-email")]
     [HttpGet]
     public async Task<IActionResult> GetCompanyProfileDetailsByEmail()
@@ -191,7 +189,7 @@ public class CompanyController : ControllerBase
                     Errors = null
                 });
             }
-            
+
             return BadRequest(new ApiResponse<string>
             {
                 Success = false,
@@ -209,4 +207,52 @@ public class CompanyController : ControllerBase
             });
         }
     }
+
+    [Route("get-company-locations")]
+    [HttpGet]
+    public async Task<IActionResult> GetCompanyLocations()
+    {
+        try
+        {
+            string? Email = HttpContext.Items["Email"]?.ToString();
+
+            if (Email == null)
+            {
+                return Unauthorized(new { message = "Invalid or missing token" });
+            }
+
+            ResponseViewModel<CompanyLocationWithNameForProfileViewModel> companyLocationsResponse = await _companyServices.GetCompanyLocationsByEmail(Email);
+            if (!companyLocationsResponse.Success)
+            {
+                return BadRequest(
+                    new ApiResponse<string>
+                    {
+                        Success = false,
+                        Message = companyLocationsResponse.Message ?? "Failed to retrieve company locations.",
+                        Data = null,
+                        Errors = null
+                    }
+                );
+            }
+            return Ok(
+                new ApiResponse<List<CompanyLocationWithNameForProfileViewModel>>
+                {
+                    Success = true,
+                    Message = companyLocationsResponse.Message ?? "",
+                    Data = companyLocationsResponse.dataList,
+                    Errors = null
+                }
+            );
+        }
+        catch (Exception e)
+        {
+            return BadRequest(new ApiResponse<string>
+            {
+                Success = false,
+                Message = $"{e.Message}",
+                Data = null
+            });
+        }
+    }
+
 }

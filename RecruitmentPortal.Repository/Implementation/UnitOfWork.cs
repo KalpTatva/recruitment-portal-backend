@@ -16,6 +16,10 @@ public class UnitOfWork : IUnitOfWork
     public ICompanySocialMediumRepository companySocialMediumRepository { get; set; }
     public ICompanyStatusRepository companyStatusRepository { get; set; }
     public ICityRepository cityRepository { get; set; }
+    public IJobTypeRepository jobTypeRepository { get; set; }
+    public IJobRoleRepository jobRoleRepository { get; set; }
+    public IDegreeRepository degreeRepository { get; set; }
+    public IJobCategoryRepository jobCategoryRepository { get; set; }
     public UnitOfWork(RecruitmentPortalContext context)
     {
         _context = context;
@@ -28,7 +32,10 @@ public class UnitOfWork : IUnitOfWork
         companyLocationRepository = new CompanyLocationRepository(_context);
         companySocialMediumRepository = new CompanySocialMediumRepository(_context);
         companyStatusRepository = new CompanyStatusRepository(_context);
-
+        jobTypeRepository = new JobTypeRepository(_context);
+        jobRoleRepository = new JobRoleRepository(_context);
+        degreeRepository = new DegreeRepository(_context);
+        jobCategoryRepository = new JobCategoryRepository(_context);
     }
 
     public async Task<int> SaveChanges()

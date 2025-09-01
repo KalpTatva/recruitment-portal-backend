@@ -33,6 +33,8 @@ public partial class RecruitmentPortalContext : DbContext
 
     public virtual DbSet<Country> Countries { get; set; }
 
+    public virtual DbSet<Degree> Degrees { get; set; }
+
     public virtual DbSet<Education> Educations { get; set; }
 
     public virtual DbSet<EducationUserMapping> EducationUserMappings { get; set; }
@@ -44,6 +46,10 @@ public partial class RecruitmentPortalContext : DbContext
     public virtual DbSet<Job> Jobs { get; set; }
 
     public virtual DbSet<JobCategory> JobCategories { get; set; }
+
+    public virtual DbSet<JobRole> JobRoles { get; set; }
+
+    public virtual DbSet<JobType> JobTypes { get; set; }
 
     public virtual DbSet<JobsHistory> JobsHistories { get; set; }
 
@@ -355,6 +361,16 @@ public partial class RecruitmentPortalContext : DbContext
                 .IsUnicode(false);
         });
 
+        modelBuilder.Entity<Degree>(entity =>
+        {
+            entity.HasKey(e => e.DegreeId).HasName("PK__Degrees__4D94AD2ED58E25C9");
+
+            entity.Property(e => e.Degree1)
+                .HasMaxLength(500)
+                .IsUnicode(false)
+                .HasColumnName("Degree");
+        });
+
         modelBuilder.Entity<Education>(entity =>
         {
             entity.HasKey(e => e.EducationId).HasName("PK__Educatio__4BBE3805D5ADD915");
@@ -454,17 +470,8 @@ public partial class RecruitmentPortalContext : DbContext
 
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.CreatedById).HasDefaultValue(0);
-            entity.Property(e => e.Degree)
-                .HasMaxLength(200)
-                .IsUnicode(false);
             entity.Property(e => e.DeletedById).HasDefaultValue(0);
-            entity.Property(e => e.Experience)
-                .HasMaxLength(200)
-                .IsUnicode(false);
             entity.Property(e => e.IsDeleted).HasDefaultValue(false);
-            entity.Property(e => e.JobRole)
-                .HasMaxLength(255)
-                .IsUnicode(false);
             entity.Property(e => e.JobTitle)
                 .HasMaxLength(255)
                 .IsUnicode(false);
@@ -482,10 +489,25 @@ public partial class RecruitmentPortalContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Jobs__CompanyLoc__7D0E9093");
 
+            entity.HasOne(d => d.Degree).WithMany(p => p.Jobs)
+                .HasForeignKey(d => d.DegreeId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Jobs__DegreeId__2610A626");
+
             entity.HasOne(d => d.JobCategory).WithMany(p => p.Jobs)
                 .HasForeignKey(d => d.JobCategoryId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Jobs__JobCategor__7E02B4CC");
+
+            entity.HasOne(d => d.JobRole).WithMany(p => p.Jobs)
+                .HasForeignKey(d => d.JobRoleId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Jobs__JobRoleId__1B9317B3");
+
+            entity.HasOne(d => d.JobType).WithMany(p => p.Jobs)
+                .HasForeignKey(d => d.JobTypeId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Jobs__JobTypeId__214BF109");
         });
 
         modelBuilder.Entity<JobCategory>(entity =>
@@ -499,6 +521,26 @@ public partial class RecruitmentPortalContext : DbContext
                 .IsUnicode(false);
         });
 
+        modelBuilder.Entity<JobRole>(entity =>
+        {
+            entity.HasKey(e => e.JobRoleId).HasName("PK__JobRoles__6D8BAC2F8195BBBE");
+
+            entity.Property(e => e.JobRole1)
+                .HasMaxLength(500)
+                .IsUnicode(false)
+                .HasColumnName("JobRole");
+        });
+
+        modelBuilder.Entity<JobType>(entity =>
+        {
+            entity.HasKey(e => e.JobTypeId).HasName("PK__JobTypes__E1F462AD90A54F89");
+
+            entity.Property(e => e.JobType1)
+                .HasMaxLength(500)
+                .IsUnicode(false)
+                .HasColumnName("JobType");
+        });
+
         modelBuilder.Entity<JobsHistory>(entity =>
         {
             entity.HasKey(e => e.JobHistoryId).HasName("PK__Jobs_His__4D0D6260D1D0242A");
@@ -508,17 +550,8 @@ public partial class RecruitmentPortalContext : DbContext
             entity.Property(e => e.JobHistoryId).HasColumnName("Job_HistoryId");
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.CreatedById).HasDefaultValue(0);
-            entity.Property(e => e.Degree)
-                .HasMaxLength(200)
-                .IsUnicode(false);
             entity.Property(e => e.DeletedById).HasDefaultValue(0);
-            entity.Property(e => e.Experience)
-                .HasMaxLength(200)
-                .IsUnicode(false);
             entity.Property(e => e.IsDeleted).HasDefaultValue(false);
-            entity.Property(e => e.JobRole)
-                .HasMaxLength(255)
-                .IsUnicode(false);
             entity.Property(e => e.JobTitle)
                 .HasMaxLength(255)
                 .IsUnicode(false);
@@ -536,6 +569,11 @@ public partial class RecruitmentPortalContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Jobs_Hist__Compa__078C1F06");
 
+            entity.HasOne(d => d.Degree).WithMany(p => p.JobsHistories)
+                .HasForeignKey(d => d.DegreeId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Jobs_Hist__Degre__251C81ED");
+
             entity.HasOne(d => d.JobCategory).WithMany(p => p.JobsHistories)
                 .HasForeignKey(d => d.JobCategoryId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -545,6 +583,16 @@ public partial class RecruitmentPortalContext : DbContext
                 .HasForeignKey(d => d.JobId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Jobs_Hist__JobId__05A3D694");
+
+            entity.HasOne(d => d.JobRole).WithMany(p => p.JobsHistories)
+                .HasForeignKey(d => d.JobRoleId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Jobs_Hist__JobRo__1C873BEC");
+
+            entity.HasOne(d => d.JobType).WithMany(p => p.JobsHistories)
+                .HasForeignKey(d => d.JobTypeId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Jobs_Hist__JobTy__2057CCD0");
         });
 
         modelBuilder.Entity<Profile>(entity =>

@@ -16,13 +16,13 @@ public class JobController : ControllerBase
         _jobService = jobService;
     }
 
-    [HttpGet]
+    [HttpPost]
     [Route("add-job")]
-    public async Task<IActionResult> AddJobs()
+    public async Task<IActionResult> AddJobs(AddJobsViewModel AddJobs)
     {
         try
         {
-            return Ok();
+            return Ok();    
         }
         catch (Exception e)
         {

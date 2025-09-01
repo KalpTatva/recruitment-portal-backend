@@ -13,6 +13,10 @@ public interface IUnitOfWork : IDisposable
     ICompanySocialMediumRepository companySocialMediumRepository { get; set; }
     ICompanyStatusRepository companyStatusRepository { get; set; }
     ICityRepository cityRepository { get; set; }
+    IJobTypeRepository jobTypeRepository { get; set; }
+    IJobRoleRepository jobRoleRepository { get; set; }
+    IDegreeRepository degreeRepository { get; set; }
+    IJobCategoryRepository jobCategoryRepository { get; set; }
     Task<int> SaveChanges();
     Task<IDbContextTransaction> BeginTransactionAsync();
     Task CommitAsync();
