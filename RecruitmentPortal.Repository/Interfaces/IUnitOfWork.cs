@@ -17,6 +17,7 @@ public interface IUnitOfWork : IDisposable
     IJobRoleRepository jobRoleRepository { get; set; }
     IDegreeRepository degreeRepository { get; set; }
     IJobCategoryRepository jobCategoryRepository { get; set; }
+    IJobRepository jobRepository { get; set; }
     Task<int> SaveChanges();
     Task<IDbContextTransaction> BeginTransactionAsync();
     Task CommitAsync();

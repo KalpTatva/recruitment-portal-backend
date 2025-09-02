@@ -51,6 +51,8 @@ public partial class JobsHistory
 
     public int DegreeId { get; set; }
 
+    public string? Operation { get; set; }
+
     public virtual Company Company { get; set; } = null!;
 
     public virtual CompanyLocation CompanyLocation { get; set; } = null!;

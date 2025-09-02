@@ -84,7 +84,7 @@ public class CompanyController : ControllerBase
                 });
             }
 
-            companyResponse.data.ImageUrl = $"{Request.Scheme}://{Request.Host}{companyResponse.data.ImageUrl}" ?? "";
+            // companyResponse.data.ImageUrl = $"{Request.Scheme}://{Request.Host}{companyResponse.data.ImageUrl}" ?? "";
             return Ok(new ApiResponse<CompanyDetailsForProfileViewModel>
             {
                 Success = true,
@@ -178,14 +178,16 @@ public class CompanyController : ControllerBase
                 return Unauthorized(new { message = "Invalid or missing token" });
             }
 
-            ResponseViewModel<string> response = await _companyServices.UploadCompanyLogo(file, Email);
+            string requestUrl = $"{Request.Scheme}://{Request.Host}";
+
+            ResponseViewModel<string> response = await _companyServices.UploadCompanyLogo(file, Email, requestUrl);
             if (response.Success)
             {
                 return Ok(new ApiResponse<string>
                 {
                     Success = true,
                     Message = response?.Message ?? "",
-                    Data = $"{Request.Scheme}://{Request.Host}{response?.data ?? ""}",
+                    Data = response?.data ?? "",
                     Errors = null
                 });
             }

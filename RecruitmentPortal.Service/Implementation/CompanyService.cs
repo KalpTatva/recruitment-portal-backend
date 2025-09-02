@@ -44,7 +44,7 @@ public class CompanyService : ICompanyService
         }
     }
 
-    public async Task<ResponseViewModel<string>> UploadCompanyLogo(IFormFile file, string email)
+    public async Task<ResponseViewModel<string>> UploadCompanyLogo(IFormFile file, string email, string requestUrl)
     {
         try
         {
@@ -65,7 +65,7 @@ public class CompanyService : ICompanyService
 
             if (company != null)
             {
-                company.ImageUrl = $"/uploads/{fileName}";
+                company.ImageUrl = $"{requestUrl}/uploads/{fileName}";
                 company.ModifiedAt = DateTime.Now;
                 company.ModifiedById = user.UserId;
                 await _unitOfWork.companyRepository.UpdateAsync(company);
@@ -75,7 +75,7 @@ public class CompanyService : ICompanyService
             {
                 Success = true,
                 Message = "Image uploaded successfully!",
-                data = $"/uploads/{fileName}"
+                data = $"{requestUrl}/uploads/{fileName}"
             };
 
         }

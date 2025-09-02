@@ -468,6 +468,8 @@ public partial class RecruitmentPortalContext : DbContext
         {
             entity.HasKey(e => e.JobId).HasName("PK__Jobs__056690C297282C99");
 
+            entity.ToTable(tb => tb.HasTrigger("trg_Jobs_history_ins_del"));
+
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.CreatedById).HasDefaultValue(0);
             entity.Property(e => e.DeletedById).HasDefaultValue(0);
@@ -558,6 +560,10 @@ public partial class RecruitmentPortalContext : DbContext
             entity.Property(e => e.MaxSalary).HasColumnType("numeric(18, 0)");
             entity.Property(e => e.MinSalary).HasColumnType("numeric(18, 0)");
             entity.Property(e => e.ModifiedById).HasDefaultValue(0);
+            entity.Property(e => e.Operation)
+                .HasMaxLength(3)
+                .IsUnicode(false)
+                .IsFixedLength();
 
             entity.HasOne(d => d.Company).WithMany(p => p.JobsHistories)
                 .HasForeignKey(d => d.CompanyId)

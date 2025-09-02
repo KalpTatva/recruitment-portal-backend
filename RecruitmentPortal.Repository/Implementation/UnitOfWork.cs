@@ -20,6 +20,7 @@ public class UnitOfWork : IUnitOfWork
     public IJobRoleRepository jobRoleRepository { get; set; }
     public IDegreeRepository degreeRepository { get; set; }
     public IJobCategoryRepository jobCategoryRepository { get; set; }
+    public IJobRepository jobRepository { get; set; }
     public UnitOfWork(RecruitmentPortalContext context)
     {
         _context = context;
@@ -36,6 +37,7 @@ public class UnitOfWork : IUnitOfWork
         jobRoleRepository = new JobRoleRepository(_context);
         degreeRepository = new DegreeRepository(_context);
         jobCategoryRepository = new JobCategoryRepository(_context);
+        jobRepository = new JobRepository(_context);
     }
 
     public async Task<int> SaveChanges()

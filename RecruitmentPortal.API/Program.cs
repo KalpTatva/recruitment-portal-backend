@@ -55,7 +55,7 @@ builder.Services.AddScoped<IDegreeRepository, DegreeRepository>();
 builder.Services.AddScoped<IJobRoleRepository, JobRoleRepository>();
 builder.Services.AddScoped<IJobTypeRepository, JobTypeRepository>();
 builder.Services.AddScoped<IJobCategoryRepository, JobCategoryRepository>();
-
+builder.Services.AddScoped<IJobRepository, JobRepository>();
 
 var app = builder.Build();
 

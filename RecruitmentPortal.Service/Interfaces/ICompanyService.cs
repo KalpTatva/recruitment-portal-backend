@@ -8,6 +8,6 @@ public interface ICompanyService
     Task<ResponseViewModel<CompanyDetailsViewModel>> GetCompanyDetailsByEmail(string Email);
     Task<ResponseViewModel<string>> EditCompanyDetails(CompanyDetailsViewModel companyDetails);
     Task<ResponseViewModel<CompanyDetailsForProfileViewModel>> GetCompanyDetailsByEmailForProfile(string Email);
-    Task<ResponseViewModel<string>> UploadCompanyLogo(IFormFile file, string email);
+    Task<ResponseViewModel<string>> UploadCompanyLogo(IFormFile file, string email, string requestUrl);
     Task<ResponseViewModel<CompanyLocationWithNameForProfileViewModel>> GetCompanyLocationsByEmail(string email);
 }
