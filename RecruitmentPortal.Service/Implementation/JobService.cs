@@ -36,7 +36,27 @@ public class JobService : IJobService
             throw new Exception(e.Message);
         }
     }
-    
+    public async Task<ResponseViewModel<JobListViewModel>> GetJobsByFilters(int categoryId = 0)
+    {
+        try
+        {
+            JobListViewModel jobs = new();
+            List<ListOfJobsViewModel>? jobList = await _unitOfWork.jobRepository.GetJobDetailsByFilters(categoryId);
+            jobs.JobList = jobList;
+
+            return new ResponseViewModel<JobListViewModel>
+            {
+                Success = true,
+                data = jobs,
+                Message = "jobs data retrived successfully!"
+            };
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message);
+        }
+    }
+
     public async Task<ResponseViewModel<string>> AddJobs(AddJobsViewModel addJobs, string email)
     {
         try
@@ -91,6 +111,62 @@ public class JobService : IJobService
         catch (Exception e)
         {
             throw new Exception(e.Message);
+        }
+    }
+
+    public async Task<ResponseViewModel<City>> GetCitiesList()
+    {
+        try
+        {
+            return new ResponseViewModel<City>
+            {
+                Success = true,
+                Message = "Countries retrieved successfully.",
+                dataList = await _unitOfWork.cityRepository.GetAllAsync()
+            };
+
+        }
+        catch (Exception e)
+        {
+            throw new Exception($"Error in retrieving cities: {e.Message}");
+        }
+    }
+
+
+    public async Task<ResponseViewModel<CategoryFilterViewModel>> GetCategoryFilters()
+    {
+        try
+        {
+            List<CategoryFilterViewModel> category = await _unitOfWork.jobCategoryRepository.GetCategoryFilters();
+            return new ResponseViewModel<CategoryFilterViewModel>
+            {
+                Success = true,
+                Message = "Categories retrived successfully.",
+                dataList = category
+            };
+        }
+        catch (Exception e)
+        {
+            throw new Exception($"Error in retrieving category filters: {e.Message}");
+        }
+    }
+
+
+    public async Task<ResponseViewModel<JobType>> GetJobTypeFilters()
+    {
+        try
+        {
+            List<JobType> jobTypes = await _unitOfWork.jobTypeRepository.GetAllAsync();
+            return new ResponseViewModel<JobType>
+            {
+                Success = true,
+                Message = "Job types retrived successfully.",
+                dataList = jobTypes
+            };
+        }
+        catch (Exception e)
+        {
+            throw new Exception($"Error in retrieving job type filters: {e.Message}");
         }
     }
 }

@@ -43,6 +43,58 @@ public class JobRepository : GenericRepository<Job>, IJobRepository
         }
     }
 
+    public async Task<List<ListOfJobsViewModel>> GetJobDetailsByFilters(int categoryId = 0)
+    {
+        try
+        {
+            if (categoryId == 0)
+            {
+                List<ListOfJobsViewModel> lists = await _context.Jobs.Select(x => new ListOfJobsViewModel
+                {
+                    ImageUrl = x.Company.ImageUrl,
+                    CompanyName = x.Company.CompanyName,
+                    JobRole = x.JobRole.JobRole1,
+                    JobType = x.JobType.JobType1,
+                    JobCategory = x.JobCategory.CategoryName,
+                    JobTitle = x.JobTitle,
+                    Address = $"{x.CompanyLocation.State.StateName}, {x.CompanyLocation.Country.CountryName}",
+                    MinSalary = x.MinSalary ?? 0,
+                    MaxSalary = x.MaxSalary ?? 0,
+                    ApplicationStartDate = x.ApplicationStartDate,
+                    ApplicationEndDate = x.ApllicationEndDate,
+                    Experience = x.Experience,
+                    CreatedAt = GetTimestamp(x.CreatedAt)
+                }).ToListAsync();
+                return lists;
+
+            }
+            else
+            {
+                List<ListOfJobsViewModel> lists = await _context.Jobs.Where(x => x.JobCategoryId == categoryId).Select(x => new ListOfJobsViewModel
+                {
+                    ImageUrl = x.Company.ImageUrl,
+                    CompanyName = x.Company.CompanyName,
+                    JobRole = x.JobRole.JobRole1,
+                    JobType = x.JobType.JobType1,
+                    JobCategory = x.JobCategory.CategoryName,
+                    JobTitle = x.JobTitle,
+                    Address = $"{x.CompanyLocation.State.StateName}, {x.CompanyLocation.Country.CountryName}",
+                    MinSalary = x.MinSalary ?? 0,
+                    MaxSalary = x.MaxSalary ?? 0,
+                    ApplicationStartDate = x.ApplicationStartDate,
+                    ApplicationEndDate = x.ApllicationEndDate,
+                    Experience = x.Experience,
+                    CreatedAt = GetTimestamp(x.CreatedAt)
+                }).ToListAsync();
+                return lists;
+            }
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message);
+        }
+    }
+
     private static string GetTimestamp(DateTime? createdAt)
     {
         if (createdAt != null)

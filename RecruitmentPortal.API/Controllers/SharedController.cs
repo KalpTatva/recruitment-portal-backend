@@ -158,6 +158,8 @@ public class SharedController : ControllerBase
     }
 
 
+    
+
     [Route("get-job-types")]
     [HttpGet]
     public async Task<IActionResult> GetJobTypes()

@@ -32,6 +32,7 @@ public class SharedService : ISharedService
         }
     }
 
+
     public async Task<ResponseViewModel<State>> GetStateListByCountryId(int countryId)
     {
         try
@@ -85,6 +86,7 @@ public class SharedService : ISharedService
             throw new Exception($"Error retrieving cities for state ID {stateId}: {e.Message}");
         }
     }
+    
 
 
     public async Task<ResponseViewModel<JobType>> GetJobTypeList()
@@ -195,6 +197,9 @@ public class SharedService : ISharedService
             throw new Exception($"Error retrieving categories : {e.Message}");
         }
     }
+
+
+
     
 
 }
