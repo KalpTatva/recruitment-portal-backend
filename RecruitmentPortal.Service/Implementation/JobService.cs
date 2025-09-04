@@ -36,12 +36,23 @@ public class JobService : IJobService
             throw new Exception(e.Message);
         }
     }
-    public async Task<ResponseViewModel<JobListViewModel>> GetJobsByFilters(int categoryId = 0)
+
+    
+    public async Task<ResponseViewModel<JobListViewModel>> GetJobsByFilters(
+        int categoryId = 0,
+        string searchInput = "",
+        int location = 0,
+        int jobType = 0,
+        int experience = 0,
+        int datePost = 0,
+        int minSalary = 0,
+        int maxSalary = 0
+    )
     {
         try
         {
             JobListViewModel jobs = new();
-            List<ListOfJobsViewModel>? jobList = await _unitOfWork.jobRepository.GetJobDetailsByFilters(categoryId);
+            List<ListOfJobsViewModel>? jobList = await _unitOfWork.jobRepository.GetJobDetailsByFilters(categoryId, searchInput, location, jobType, experience, datePost, minSalary, maxSalary);
             jobs.JobList = jobList;
 
             return new ResponseViewModel<JobListViewModel>

@@ -43,51 +43,94 @@ public class JobRepository : GenericRepository<Job>, IJobRepository
         }
     }
 
-    public async Task<List<ListOfJobsViewModel>> GetJobDetailsByFilters(int categoryId = 0)
+    public async Task<List<ListOfJobsViewModel>> GetJobDetailsByFilters(
+        int categoryId = 0,
+        string searchInput = "",
+        int location = 0,
+        int jobType = 0,
+        int experience = 0,
+        int datePost = 0,
+        int minSalary = 0,
+        int maxSalary = 0
+    )
     {
         try
         {
-            if (categoryId == 0)
+            IQueryable<Job>? query = _context.Jobs.AsQueryable();
+            query = query.Where(x => x.IsDeleted == false);
+            // category ids
+            if (categoryId > 0)
             {
-                List<ListOfJobsViewModel> lists = await _context.Jobs.Select(x => new ListOfJobsViewModel
+                query = query.Where(x => x.JobCategoryId == categoryId);
+            }
+            // search inputs (company name / job title)
+            if (!string.IsNullOrWhiteSpace(searchInput))
+            {
+                query = query.Where(x =>
+                    x.JobTitle.Contains(searchInput) ||
+                    x.Company.CompanyName.Contains(searchInput));
+            }
+            // locations
+            if (location > 0)
+            {
+                query = query.Where(x => x.CompanyLocation.CityId == location && x.CompanyLocation.IsDeleted == false);
+            }
+            // job types
+            if (jobType > 0)
+            {
+                query = query.Where(x => x.JobTypeId == jobType);
+            }
+            // experience
+            if (experience > 0)
+            {
+                query = query.Where(x => x.Experience >= experience);
+            }
+            // date 
+            if (datePost > 0)
+            {
+                DateTime now = DateTime.UtcNow;
+                switch (datePost)
                 {
-                    ImageUrl = x.Company.ImageUrl,
-                    CompanyName = x.Company.CompanyName,
-                    JobRole = x.JobRole.JobRole1,
-                    JobType = x.JobType.JobType1,
-                    JobCategory = x.JobCategory.CategoryName,
-                    JobTitle = x.JobTitle,
-                    Address = $"{x.CompanyLocation.State.StateName}, {x.CompanyLocation.Country.CountryName}",
-                    MinSalary = x.MinSalary ?? 0,
-                    MaxSalary = x.MaxSalary ?? 0,
-                    ApplicationStartDate = x.ApplicationStartDate,
-                    ApplicationEndDate = x.ApllicationEndDate,
-                    Experience = x.Experience,
-                    CreatedAt = GetTimestamp(x.CreatedAt)
-                }).ToListAsync();
-                return lists;
+                    case 2: // Last Hour
+                        query = query.Where(x => x.CreatedAt >= now.AddHours(-1));
+                        break;
+                    case 3: // Last 24 Hours
+                        query = query.Where(x => x.CreatedAt >= now.AddDays(-1));
+                        break;
+                    case 4: // Last 7 Days
+                        query = query.Where(x => x.CreatedAt >= now.AddDays(-7));
+                        break;
+                    case 5: // Last 30 Days
+                        query = query.Where(x => x.CreatedAt >= now.AddDays(-30));
+                        break;
+                }
+            }
+            // salary 
+            if (maxSalary > 0 && maxSalary > minSalary)
+            {
+                query = query.Where(x => x.MaxSalary <= maxSalary && x.MinSalary >= minSalary);
+            } 
 
-            }
-            else
+            query = query.OrderByDescending(x => x.CreatedAt);
+
+            return await query.Select(x => new ListOfJobsViewModel
             {
-                List<ListOfJobsViewModel> lists = await _context.Jobs.Where(x => x.JobCategoryId == categoryId).Select(x => new ListOfJobsViewModel
-                {
-                    ImageUrl = x.Company.ImageUrl,
-                    CompanyName = x.Company.CompanyName,
-                    JobRole = x.JobRole.JobRole1,
-                    JobType = x.JobType.JobType1,
-                    JobCategory = x.JobCategory.CategoryName,
-                    JobTitle = x.JobTitle,
-                    Address = $"{x.CompanyLocation.State.StateName}, {x.CompanyLocation.Country.CountryName}",
-                    MinSalary = x.MinSalary ?? 0,
-                    MaxSalary = x.MaxSalary ?? 0,
-                    ApplicationStartDate = x.ApplicationStartDate,
-                    ApplicationEndDate = x.ApllicationEndDate,
-                    Experience = x.Experience,
-                    CreatedAt = GetTimestamp(x.CreatedAt)
-                }).ToListAsync();
-                return lists;
-            }
+                ImageUrl = x.Company.ImageUrl,
+                CompanyName = x.Company.CompanyName,
+                JobRole = x.JobRole.JobRole1,
+                JobType = x.JobType.JobType1,
+                JobCategory = x.JobCategory.CategoryName,
+                JobTitle = x.JobTitle,
+                Address = $"{x.CompanyLocation.State.StateName}, {x.CompanyLocation.Country.CountryName}",
+                MinSalary = x.MinSalary ?? 0,
+                MaxSalary = x.MaxSalary ?? 0,
+                ApplicationStartDate = x.ApplicationStartDate,
+                ApplicationEndDate = x.ApllicationEndDate,
+                Experience = x.Experience,
+                CreatedAt = GetTimestamp(x.CreatedAt)
+            })
+
+            .ToListAsync();
         }
         catch (Exception e)
         {

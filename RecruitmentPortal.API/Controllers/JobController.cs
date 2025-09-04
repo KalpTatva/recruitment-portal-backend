@@ -253,16 +253,18 @@ public class JobController : ControllerBase
     public async Task<IActionResult> GetJobListByParams(
         int categoryId = 0,
         string searchInput = "",
-        int Location = 0,int
-        jobType = 0,
+        int location = 0,
+        int jobType = 0,
         int experience = 0,
-        int datePost = 0
+        int datePost = 0,
+        int minSalary = 0,
+        int maxSalary = 0
     )
     {
         try
         {
             
-            ResponseViewModel<JobListViewModel> listViewModel = await _jobService.GetJobsByFilters(categoryId);
+            ResponseViewModel<JobListViewModel> listViewModel = await _jobService.GetJobsByFilters(categoryId, searchInput, location, jobType, experience, datePost, minSalary, maxSalary);
 
             if (listViewModel != null && listViewModel.Success)
             {
