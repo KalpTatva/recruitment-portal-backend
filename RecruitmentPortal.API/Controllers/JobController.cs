@@ -3,6 +3,7 @@ using Microsoft.Identity.Client;
 using RecruitmentPortal.Repository.Models;
 using RecruitmentPortal.Repository.ViewModels;
 using RecruitmentPortal.Service.Interfaces;
+using static RecruitmentPortal.Repository.Helpers.Enums;
 
 namespace RecruitmentPortal.API.Controllers;
 
@@ -244,8 +245,45 @@ public class JobController : ControllerBase
                 Data = null
             });
         }
-    }
+    } 
 
+    [Route("get-job-detail/{id}")]
+    [HttpGet]
+    public async Task<IActionResult> GetJobDetailsById(int id = 0)
+    {
+        try
+        {
+            ResponseViewModel<JobDetailsViewModel> jobDetailResponse = await _jobService.GetJobDetails(id);
+            if (jobDetailResponse != null)
+            {
+                return Ok(new ApiResponse<JobDetailsViewModel>
+                {
+                    Success = true,
+                    Message = jobDetailResponse.Message ?? "job lists retrieved successully!",
+                    Data = jobDetailResponse.data
+                });
+            }
+
+            return BadRequest(new ApiResponse<string>
+            {
+                Success = false,
+                Message = $"500 : Failed to load job details, please try again letter!",
+                Data = null
+            });
+        }
+        catch (Exception e)
+        {
+            return BadRequest(new ApiResponse<string>
+            {
+                Success = false,
+                Message = $"500 : Error occured, {e.Message}",
+                Data = null
+            });
+        }
+        
+    }
+    
+        
     
 
     [HttpGet]
@@ -258,13 +296,28 @@ public class JobController : ControllerBase
         int experience = 0,
         int datePost = 0,
         int minSalary = 0,
-        int maxSalary = 0
+        int maxSalary = 0,
+        int sorting = (int)SortingEnum.SortByLatest,
+        int pageNumber = 1,
+        int pageSize = 6
     )
     {
         try
         {
             
-            ResponseViewModel<JobListViewModel> listViewModel = await _jobService.GetJobsByFilters(categoryId, searchInput, location, jobType, experience, datePost, minSalary, maxSalary);
+            ResponseViewModel<JobListViewModel> listViewModel = await _jobService.GetJobsByFilters(
+                categoryId,
+                searchInput,
+                location,
+                jobType,
+                experience,
+                datePost,
+                minSalary,
+                maxSalary,
+                sorting,
+                pageNumber,
+                pageSize
+            );
 
             if (listViewModel != null && listViewModel.Success)
             {

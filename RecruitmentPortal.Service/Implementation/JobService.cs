@@ -3,6 +3,7 @@ using RecruitmentPortal.Repository.Interfaces;
 using RecruitmentPortal.Repository.Models;
 using RecruitmentPortal.Repository.ViewModels;
 using RecruitmentPortal.Service.Interfaces;
+using static RecruitmentPortal.Repository.Helpers.Enums;
 
 namespace RecruitmentPortal.Service.Implementation;
 
@@ -37,7 +38,7 @@ public class JobService : IJobService
         }
     }
 
-    
+
     public async Task<ResponseViewModel<JobListViewModel>> GetJobsByFilters(
         int categoryId = 0,
         string searchInput = "",
@@ -46,14 +47,17 @@ public class JobService : IJobService
         int experience = 0,
         int datePost = 0,
         int minSalary = 0,
-        int maxSalary = 0
+        int maxSalary = 0,
+        int sorting = (int)SortingEnum.SortByLatest,
+        int pageNumber = 1,
+        int pageSize = 6
     )
     {
         try
         {
-            JobListViewModel jobs = new();
-            List<ListOfJobsViewModel>? jobList = await _unitOfWork.jobRepository.GetJobDetailsByFilters(categoryId, searchInput, location, jobType, experience, datePost, minSalary, maxSalary);
-            jobs.JobList = jobList;
+            JobListViewModel? jobs = await _unitOfWork.jobRepository.GetJobDetailsByFilters(
+                categoryId, searchInput, location, jobType, experience, datePost, minSalary, maxSalary, sorting, pageNumber, pageSize
+            );
 
             return new ResponseViewModel<JobListViewModel>
             {
@@ -173,6 +177,26 @@ public class JobService : IJobService
                 Success = true,
                 Message = "Job types retrived successfully.",
                 dataList = jobTypes
+            };
+        }
+        catch (Exception e)
+        {
+            throw new Exception($"Error in retrieving job type filters: {e.Message}");
+        }
+    }
+
+    public async Task<ResponseViewModel<JobDetailsViewModel>> GetJobDetails(int jobId)
+    {
+        try
+        {
+            JobDetailsViewModel? jobDetail = await _unitOfWork.jobRepository.GetJobDetailsById(jobId);
+
+
+            return new ResponseViewModel<JobDetailsViewModel>
+            {
+                Success = true,
+                Message = "Job details retrived successfully.",
+                data = jobDetail ?? new JobDetailsViewModel(),
             };
         }
         catch (Exception e)

@@ -1,5 +1,6 @@
 using RecruitmentPortal.Repository.Models;
 using RecruitmentPortal.Repository.ViewModels;
+using static RecruitmentPortal.Repository.Helpers.Enums;
 
 namespace RecruitmentPortal.Service.Interfaces;
 
@@ -15,9 +16,13 @@ public interface IJobService
         int experience = 0,
         int datePost = 0,
         int minSalary = 0,
-        int maxSalary = 0
+        int maxSalary = 0,
+        int sorting = (int)SortingEnum.SortByLatest,
+        int pageNumber = 1,
+        int pageSize = 6
     );
     Task<ResponseViewModel<City>> GetCitiesList();
     Task<ResponseViewModel<CategoryFilterViewModel>> GetCategoryFilters();
     Task<ResponseViewModel<JobType>> GetJobTypeFilters();
+    Task<ResponseViewModel<JobDetailsViewModel>> GetJobDetails(int jodId);
 }

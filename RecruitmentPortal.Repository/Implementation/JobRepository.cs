@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using RecruitmentPortal.Repository.Interfaces;
 using RecruitmentPortal.Repository.Models;
 using RecruitmentPortal.Repository.ViewModels;
+using static RecruitmentPortal.Repository.Helpers.Enums;
 
 namespace RecruitmentPortal.Repository.Implementation;
 
@@ -43,7 +44,45 @@ public class JobRepository : GenericRepository<Job>, IJobRepository
         }
     }
 
-    public async Task<List<ListOfJobsViewModel>> GetJobDetailsByFilters(
+    public async Task<JobDetailsViewModel> GetJobDetailsById(int jobId)
+    {
+        try
+        {
+            JobDetailsViewModel? details = await _context.Jobs
+            .Where(x => x.JobId == jobId)
+            .Select(x => new JobDetailsViewModel
+            {
+                JobId = x.JobId,
+                ImageUrl = x.Company.ImageUrl,
+                CompanyName = x.Company.CompanyName,
+                JobTitle = x.JobTitle,
+                JobRole = x.JobRole.JobRole1,
+                JobType = x.JobType.JobType1,
+                JobCategory = x.JobCategory.CategoryName,
+                JobDescription = x.JobDescription,
+                ShortAddress = $"{x.CompanyLocation.State.StateName}, {x.CompanyLocation.Country.CountryName}",
+                LongAddress = $"{x.CompanyLocation.Address}, {x.CompanyLocation.City.CityName}, {x.CompanyLocation.State.StateName}, {x.CompanyLocation.Country.CountryName}",
+                MinSalary = x.MinSalary ?? 0,
+                MaxSalary = x.MaxSalary ?? 0,
+
+                ApplicationStartDate = x.ApplicationStartDate,
+                ApplicationEndDate = x.ApllicationEndDate,
+                Experience = x.Experience,
+                Degree = x.Degree.Degree1,
+                CreatedAt = GetTimestamp(x.CreatedAt),
+                Tags = x.Tags
+
+            }).FirstOrDefaultAsync();
+
+            return details ?? new JobDetailsViewModel();
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message);
+        }
+    }
+
+    public async Task<JobListViewModel> GetJobDetailsByFilters(
         int categoryId = 0,
         string searchInput = "",
         int location = 0,
@@ -51,7 +90,10 @@ public class JobRepository : GenericRepository<Job>, IJobRepository
         int experience = 0,
         int datePost = 0,
         int minSalary = 0,
-        int maxSalary = 0
+        int maxSalary = 0,
+        int sorting = (int)SortingEnum.SortByLatest,
+        int pageNumber = 0,
+        int pageSize = 6
     )
     {
         try
@@ -109,12 +151,17 @@ public class JobRepository : GenericRepository<Job>, IJobRepository
             if (maxSalary > 0 && maxSalary > minSalary)
             {
                 query = query.Where(x => x.MaxSalary <= maxSalary && x.MinSalary >= minSalary);
-            } 
+            }
+            // sortings 
 
-            query = query.OrderByDescending(x => x.CreatedAt);
+            query = sorting > 0 ?
+                    sorting == (int)SortingEnum.SortByLatest ? query.OrderByDescending(x => x.CreatedAt) :
+                    sorting == (int)SortingEnum.SortByOldest ? query.OrderBy(x => x.CreatedAt) : query.OrderByDescending(x => x.CreatedAt)
+                    : query.OrderByDescending(x => x.CreatedAt);
 
-            return await query.Select(x => new ListOfJobsViewModel
+            List<ListOfJobsViewModel> list = await query.Select(x => new ListOfJobsViewModel
             {
+                JobId = x.JobId,
                 ImageUrl = x.Company.ImageUrl,
                 CompanyName = x.Company.CompanyName,
                 JobRole = x.JobRole.JobRole1,
@@ -129,14 +176,25 @@ public class JobRepository : GenericRepository<Job>, IJobRepository
                 Experience = x.Experience,
                 CreatedAt = GetTimestamp(x.CreatedAt)
             })
-
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
+
+            // total jobs based on filters 
+            int totalJobs = await query.CountAsync();
+
+            return new JobListViewModel
+            {
+                JobList = list,
+                totalJobs = totalJobs,
+            };
         }
         catch (Exception e)
         {
             throw new Exception(e.Message);
         }
     }
+
 
     private static string GetTimestamp(DateTime? createdAt)
     {

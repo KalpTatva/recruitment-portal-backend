@@ -22,7 +22,7 @@ public class CompanyLocationRepository : GenericRepository<Models.CompanyLocatio
             return await (from c in _context.Companies
                           join cl in _context.CompanyLocations
                           on c.CompanyId equals cl.CompanyId
-                          where c.UserId == userId
+                          where c.UserId == userId && cl.IsDeleted == false
                           select new CompanyLocationWithNameForProfileViewModel
                           {
                               CompanyLocationId = cl.CompanyLocationId,

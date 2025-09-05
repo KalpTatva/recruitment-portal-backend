@@ -12,4 +12,10 @@ public class Enums
         Dark = 1,
         Light = 2
     }
+
+    public enum SortingEnum
+    {
+        SortByLatest = 1,
+        SortByOldest = 2
+    }
 }

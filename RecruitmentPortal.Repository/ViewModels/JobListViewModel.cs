@@ -3,12 +3,13 @@ namespace RecruitmentPortal.Repository.ViewModels;
 public class JobListViewModel
 {
     public List<ListOfJobsViewModel>? JobList { get; set; }
-
+    public int totalJobs { get; set; }
 }   
 
 
 public class ListOfJobsViewModel
 {
+    public int JobId {get;set;}
     public string? ImageUrl { get; set; }
     public string? CompanyName { get; set; }
     public string? JobTitle { get; set; }
@@ -22,10 +23,33 @@ public class ListOfJobsViewModel
     public DateTime? ApplicationEndDate { get; set; }
     public int Experience { get; set; }
     public string? CreatedAt { get; set; }
-} 
+}
 
 
 
+
+
+public class JobDetailsViewModel
+{
+    public int JobId { get; set; }
+    public string? ImageUrl { get; set; }
+    public string? CompanyName { get; set; }
+    public string? JobTitle { get; set; }
+    public string? JobRole { get; set; }
+    public string? JobType { get; set; }
+    public string? JobCategory { get; set; }
+    public string? JobDescription { get; set; }
+    public string? ShortAddress { get; set; }
+    public string? LongAddress { get; set; }
+    public decimal MinSalary { get; set; }
+    public decimal MaxSalary { get; set; }
+    public DateTime? ApplicationStartDate { get; set; }
+    public DateTime? ApplicationEndDate { get; set; }
+    public int Experience { get; set; }
+    public string? Degree { get; set; }
+    public string? CreatedAt { get; set; }
+    public string? Tags { get; set; }
+}
 
 /*
 
